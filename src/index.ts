@@ -5,8 +5,8 @@ const app = new Application({
 	resolution: window.devicePixelRatio || 1,
 	autoDensity: true,
 	backgroundColor: 0x6495ed,
-	width: 640,
-	height: 480
+	width: 714,
+	height: 504
 });
 
 Loader.shared.add({url:"./Trifuerza.png", name:"myTriforce"});
@@ -14,7 +14,7 @@ Loader.shared.add({url:"./clampy.png", name:"Clampy"});
 
 Loader.shared.onComplete.add(()=>{
 
-	const clampy: Sprite = Sprite.from("Clampy");
+	const clampy: Sprite = Sprite.from("myTriforce");
 
 	console.log("Hola mundo!", clampy.width, clampy.height);
 	
