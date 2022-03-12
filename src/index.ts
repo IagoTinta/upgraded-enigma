@@ -5,20 +5,25 @@ const app = new Application({
 	resolution: window.devicePixelRatio || 1,
 	autoDensity: true,
 	backgroundColor: 0x6495ed,
-	width: 714,
-	height: 504
+	width: 640,
+	height: 480
 });
 
+window.addEventListener("resize", ()=>{
+
+	console.log("resized!");
+	app.screen.width
+	app.screen.height
+
+})
+
 Loader.shared.add({url:"./Trifuerza.png", name:"myTriforce"});
-Loader.shared.add({url:"./clampy.png", name:"Clampy"});
 
 Loader.shared.onComplete.add(()=>{
 
 	const clampy: Sprite = Sprite.from("myTriforce");
-
-	console.log("Hola mundo!", clampy.width, clampy.height);
 	
-	// clampy.anchor.set(0);
+	clampy.anchor.set(0);
 	
 	clampy.x = 0;
 	clampy.y = 0;
