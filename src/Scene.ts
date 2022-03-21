@@ -1,5 +1,6 @@
 import { Container} from "pixi.js";
-import { ScoreBoard } from "./ScoreBoard";
+import { Board } from "./Board";
+import { ScoreAndRating } from "./ScoreAndRating";
 import { WalkingWolf } from "./WalkingWolf";
 
 export class Scene extends Container {
@@ -7,15 +8,18 @@ export class Scene extends Container {
     constructor() {
 
         super();
-        const GameScoreBoard: ScoreBoard = new ScoreBoard();
-        this.addChild(GameScoreBoard);
 
-        /* const myText: Text = new Text("It's a me, Majora!", {fontSize: 42, fill: 0x3E642E});
-        myText.position.set(490,520)
-        this.addChild(myText); */
+        const completeBoard: Board = new Board();
 
-        const walkingWolf: WalkingWolf = new WalkingWolf();
-        this.addChild(walkingWolf);
+        const GameScoreBoard: ScoreAndRating = new ScoreAndRating();
+        this.addChild(completeBoard,GameScoreBoard);
+
+        const walkingWolfLeft: WalkingWolf = new WalkingWolf();
+        const walkingWolfRight: WalkingWolf = new WalkingWolf();
+        walkingWolfLeft.position.set(780,590);
+        walkingWolfRight.position.set(500,590);
+        walkingWolfRight.scale.set(-1,1);
+        this.addChild(walkingWolfLeft,walkingWolfRight);
 
     }
 

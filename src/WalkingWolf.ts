@@ -14,8 +14,7 @@ export class WalkingWolf extends Container {
             ], true
         );
         animatedWolf.anchor.set(0.5);
-        animatedWolf.scale.set(-2,2);
-        animatedWolf.position.set(1100,600);
+        animatedWolf.scale.set(2);
         animatedWolf.play();
         animatedWolf.animationSpeed = 0.2;
         this.addChild(animatedWolf);

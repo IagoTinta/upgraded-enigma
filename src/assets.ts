@@ -17,4 +17,5 @@ export const assets = [
     {url:"./ScoreBoardUtils/MusicOn.png", name:"musicOn"},
     {url:"./ScoreBoardUtils/Return.png", name:"rePlay"},
     {url:"./ScoreBoardUtils/Star.png", name:"Star"},
+    {url:"./ScoreBoardUtils/Diamond.png", name:"bottomDiamond"},
 ];
