@@ -9,6 +9,7 @@ export class MajoraHat extends Container{
         const Majora: Sprite = Sprite.from("myMajora");
 	
 	    Majora.anchor.set(0.5);
+        Majora.position.set(640,360);
 
 	    const marioHat: Sprite = Sprite.from("Mario_Hat");
 
