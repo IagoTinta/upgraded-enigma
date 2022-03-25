@@ -1,7 +1,7 @@
 import { Container} from "pixi.js";
-import { Board } from "./Board";
-import { ScoreAndRating } from "./ScoreAndRating";
-import { WalkingWolf } from "./WalkingWolf";
+import { Board } from "../Game/Board";
+import { ScoreAndRating } from "../Game/ScoreAndRating";
+import { WalkingWolf } from "../Game/WalkingWolf";
 
 export class Scene extends Container {
 

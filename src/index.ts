@@ -1,6 +1,6 @@
 import { Application, Loader} from 'pixi.js'
 import { assets } from './assets';
-import { Scene } from './Scene';
+import { Scene } from './scenes/Scene';
 //imports from pixi libraries
 
 //creates a game app with set characteristics

@@ -12,8 +12,13 @@ export class ScoreAndRating extends Container {
         const changeSound: Sprite = Sprite.from("musicOn");
         Exit.position.x = 790;
         rePlay.position.x = 685;
+        Exit.on("mousedown", this.onMouseDown, this);
+        Exit.on("mouseup", this.onMouseUp, this);
+        Exit.interactive = true;
         menuSuperior.scale.set(0.65);
         menuSuperior.position.set(350,58);
+
+
         menuSuperior.addChild(Exit,rePlay,changeSound);
 
         const Rating: Container = new Container();
@@ -54,7 +59,15 @@ export class ScoreAndRating extends Container {
 
     }
 
+    private onMouseDown():void {
+
+        console.log("hiciste click");
+
+    }
+    private onMouseUp():void {
+
+        console.log("soltaste el click");
+
+    }
+
 }
-/* const myText: Text = new Text("It's a me, Majora!", {fontSize: 42, fill: 0x3E642E});
-    myText.position.set(490,520)
-    this.addChild(myText); */
