@@ -12,8 +12,10 @@ export class ScoreAndRating extends Container {
         const changeSound: Sprite = Sprite.from("musicOn");
         Exit.position.x = 790;
         rePlay.position.x = 685;
-        Exit.on("mousedown", this.onMouseDown, this);
-        Exit.on("mouseup", this.onMouseUp, this);
+        Exit.on("pointerdown", this.onPointerDown, this);
+        Exit.on("pointerup", this.onPointerUp, this);
+        Exit.on("pointerover", this.onPointerOver, this);
+        Exit.on("pointerout", this.onPointerOut, this);
         Exit.interactive = true;
         menuSuperior.scale.set(0.65);
         menuSuperior.position.set(350,58);
@@ -59,14 +61,24 @@ export class ScoreAndRating extends Container {
 
     }
 
-    private onMouseDown():void {
+    private onPointerDown():void {
 
         console.log("hiciste click");
 
     }
-    private onMouseUp():void {
+    private onPointerUp():void {
 
         console.log("soltaste el click");
+
+    }
+    private onPointerOver():void {
+
+        console.log("entraste al icono");
+
+    }
+    private onPointerOut():void {
+
+        console.log("saliste del icono");
 
     }
 
