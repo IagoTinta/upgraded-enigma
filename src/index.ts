@@ -1,20 +1,19 @@
 import { Application, Loader} from 'pixi.js'
 import { assets } from './assets';
 import { Scene } from './scenes/Scene';
-//imports from pixi libraries
+import { Keyboard } from './util.ts/Keyboard';
 
-//creates a game app with set characteristics
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
 	resolution: window.devicePixelRatio || 1,
 	autoDensity: true,
-	backgroundColor: 0x6495ed,
+	backgroundColor: 0x6df920,
 	width: 1280,
 	height: 720
 });
 
-//adjusts game screen everytime web browser
-//is resized and centers the game screen
+Keyboard.initialize();
+
 window.addEventListener("resize", ()=>{
 
 	const scaleX = window.innerWidth / app.screen.width;
@@ -39,20 +38,12 @@ window.addEventListener("resize", ()=>{
 
 window.dispatchEvent(new Event("resize"));
 
-//imports archives
 Loader.shared.add(assets);
 
-//loads sprites on screen on run time
 Loader.shared.onComplete.add(()=>{
 
 	const myScene = new Scene();
 	app.stage.addChild(myScene);
-
-	// console.log(marioHat.toGlobal(new Point()));
-	// console.log(marioHat.parent.toGlobal(marioHat.position));
-
-	// const aux = marioHat.parent.toLocal(new Point(0,0));
-	// marioHat.position.copyFrom(aux);
 
 });
 

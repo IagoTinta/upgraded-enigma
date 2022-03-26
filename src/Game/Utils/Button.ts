@@ -20,14 +20,28 @@ export class Button extends Container{
         this.addChild(this.spr);
 
         this.spr.interactive = true;
-        this.on();
+        this.spr.on("pointerdown", this.onPointerDown, this);
+        this.spr.on("pointerup", this.onPointerUp, this);
+        this.spr.on("pointerover", this.onPointerOver, this);
+        this.spr.on("pointerout", this.onPointerOut, this);
+        this.spr.on("pointerupoutside", this.onPointerUpOutside, this);
 
     }
 
     private onPointerDown():void {
-
-        this.spr
-
+        this.spr.texture = this.down;
     }
-
+    private onPointerUp():void {
+        this.emit("buttonClick");
+        this.spr.texture = this.over;
+    }
+    private onPointerOver():void {
+        this.spr.texture = this.over;
+    }
+    private onPointerOut():void {
+        this.spr.texture = this.def;
+    }
+    private onPointerUpOutside():void{
+        this.spr.texture = this.def;
+    }
 }

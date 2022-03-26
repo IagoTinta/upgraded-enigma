@@ -1,27 +1,33 @@
-import { Container, Sprite, Text} from "pixi.js";
+import { Container, Sprite, Text, Texture} from "pixi.js";
+import { Keyboard } from "../util.ts/Keyboard";
+import { Button } from "./Utils/Button";
 
 export class ScoreAndRating extends Container {
+
+    private Exit:Button;
+    private lastKeyPressed:Text;
 
     constructor() {
 
         super();
 
         const menuSuperior: Container = new Container();
-        const Exit: Sprite = Sprite.from("Exit");
-        const rePlay: Sprite = Sprite.from("rePlay");
-        const changeSound: Sprite = Sprite.from("musicOn");
-        Exit.position.x = 790;
+        this.Exit = new Button(
+            Texture.from("BExit"),
+             Texture.from("SExit"), 
+             Texture.from("WExit"));
+        this.Exit.on("buttonClick",this.onButtonClick,this);
+        const rePlay: Sprite = Sprite.from("BrePlay");
+        const changeSound: Sprite = Sprite.from("BmusicOn");
+        this.Exit.position.x = 790;
+        rePlay.anchor.set(0.5);
         rePlay.position.x = 685;
-        Exit.on("pointerdown", this.onPointerDown, this);
-        Exit.on("pointerup", this.onPointerUp, this);
-        Exit.on("pointerover", this.onPointerOver, this);
-        Exit.on("pointerout", this.onPointerOut, this);
-        Exit.interactive = true;
+        changeSound.anchor.set(0.5);
         menuSuperior.scale.set(0.65);
-        menuSuperior.position.set(350,58);
+        menuSuperior.position.set(380,90);
 
 
-        menuSuperior.addChild(Exit,rePlay,changeSound);
+        menuSuperior.addChild(this.Exit,rePlay,changeSound);
 
         const Rating: Container = new Container();
         const Star1: Sprite  = Sprite.from("Star");
@@ -41,9 +47,9 @@ export class ScoreAndRating extends Container {
         Rating.addChild(Star1,Star2,emptyStar);
 
         const Scores: Container = new Container();
-        const First: Sprite = Sprite.from("firstPlace");
-        const Second: Sprite = Sprite.from("secondPlace");
-        const Third: Sprite = Sprite.from("thirdPlace");
+        const First: Sprite = Sprite.from("BfirstPlace");
+        const Second: Sprite = Sprite.from("BsecondPlace");
+        const Third: Sprite = Sprite.from("BthirdPlace");
         const yourScore: Text = new Text("Your Score: 50000", {fontSize: 30, fill: 0x000000});
         const highScores: Text = new Text("Highscores:     80000\n                         70000\n                         60000", 
             {fontSize: 30, fill:0x000000});
@@ -59,27 +65,25 @@ export class ScoreAndRating extends Container {
 
         this.addChild(menuSuperior,Rating,Scores);
 
-    }
+        this.lastKeyPressed = new Text("Presione una Tecla", {fontSize:30});
+        this.lastKeyPressed.anchor.set(0.5);
+        this.lastKeyPressed.position.set(640,500);
+        this.addChild(this.lastKeyPressed);
 
-    private onPointerDown():void {
-
-        console.log("hiciste click");
-
-    }
-    private onPointerUp():void {
-
-        console.log("soltaste el click");
+        Keyboard.down.on("KeyB", this.onKeyBdown, this)
+        Keyboard.up.on("KeyB", this.onKeyBup, this)
 
     }
-    private onPointerOver():void {
 
-        console.log("entraste al icono");
-
+    private onKeyBdown():void{
+        console.log("aprete la B!", this);
     }
-    private onPointerOut():void {
+    private onKeyBup():void{
+        console.log("solte la B!", this);
+    }
 
-        console.log("saliste del icono");
-
+    private onButtonClick():void {
+        console.log("mi boton hizo click!",Keyboard.state.get("KeyA"),this);
     }
 
 }
