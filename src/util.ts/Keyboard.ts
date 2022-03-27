@@ -33,7 +33,7 @@ export class Keyboard {
     }
     private static onKeyUp(event:KeyboardEvent){
 
-        Keyboard.down.emit(event.code);
+        Keyboard.up.emit(event.code);
         Keyboard.state.set(event.code,false);
 
     }

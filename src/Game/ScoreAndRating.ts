@@ -5,7 +5,9 @@ import { Button } from "./Utils/Button";
 export class ScoreAndRating extends Container {
 
     private Exit:Button;
-    private lastKeyPressed:Text;
+    //private lastKeyPressed:Text;
+    private rePlay:Button;
+    private changeSound: Button;
 
     constructor() {
 
@@ -16,18 +18,23 @@ export class ScoreAndRating extends Container {
             Texture.from("BExit"),
              Texture.from("SExit"), 
              Texture.from("WExit"));
-        this.Exit.on("buttonClick",this.onButtonClick,this);
-        const rePlay: Sprite = Sprite.from("BrePlay");
-        const changeSound: Sprite = Sprite.from("BmusicOn");
+        this.rePlay = new Button(
+            Texture.from("BrePlay"),
+            Texture.from("SrePlay"),
+            Texture.from("WrePlay")
+        );
+        this.changeSound = new Button(
+            Texture.from("BmusicOn"),
+            Texture.from("SmusicOn"),
+            Texture.from("WmusicOn")
+        )
         this.Exit.position.x = 790;
-        rePlay.anchor.set(0.5);
-        rePlay.position.x = 685;
-        changeSound.anchor.set(0.5);
+        this.rePlay.position.x = 685;
         menuSuperior.scale.set(0.65);
         menuSuperior.position.set(380,90);
 
 
-        menuSuperior.addChild(this.Exit,rePlay,changeSound);
+        menuSuperior.addChild(this.Exit,this.rePlay,this.changeSound);
 
         const Rating: Container = new Container();
         const Star1: Sprite  = Sprite.from("Star");
@@ -65,25 +72,53 @@ export class ScoreAndRating extends Container {
 
         this.addChild(menuSuperior,Rating,Scores);
 
-        this.lastKeyPressed = new Text("Presione una Tecla", {fontSize:30});
+        /*this.lastKeyPressed = new Text("Presione una Tecla", {fontSize:30});
         this.lastKeyPressed.anchor.set(0.5);
         this.lastKeyPressed.position.set(640,500);
-        this.addChild(this.lastKeyPressed);
+        this.addChild(this.lastKeyPressed);*/
 
-        Keyboard.down.on("KeyB", this.onKeyBdown, this)
-        Keyboard.up.on("KeyB", this.onKeyBup, this)
+        Keyboard.down.on("KeyW", this.onKeyWdown, this)
+        Keyboard.up.on("KeyW", this.onKeyWup, this)
+        Keyboard.down.on("KeyA", this.onKeyAdown, this)
+        Keyboard.up.on("KeyA", this.onKeyAup, this)
+        Keyboard.down.on("KeyS", this.onKeySdown, this)
+        Keyboard.up.on("KeyS", this.onKeySup, this)
+        Keyboard.down.on("KeyD", this.onKeyDdown, this)
+        Keyboard.up.on("KeyD", this.onKeyDup, this)
+        Keyboard.down.on("Space", this.onKeySpacedown, this)
+        Keyboard.up.on("Space", this.onKeySpaceup, this)
 
     }
 
-    private onKeyBdown():void{
-        console.log("aprete la B!", this);
+    private onKeyWdown():void{
+        console.log("jump");
     }
-    private onKeyBup():void{
-        console.log("solte la B!", this);
+    private onKeyWup():void{
+        console.log("stop jumping");
     }
-
-    private onButtonClick():void {
-        console.log("mi boton hizo click!",Keyboard.state.get("KeyA"),this);
+    private onKeyAdown():void{
+        console.log("move left");
+    }
+    private onKeyAup():void{
+        console.log("stop left");
+    }
+    private onKeySdown():void{
+        console.log("crouch");
+    }
+    private onKeySup():void{
+        console.log("stop crouching");
+    }
+    private onKeyDdown():void{
+        console.log("move right");
+    }
+    private onKeyDup():void{
+        console.log("stop right");
+    }
+    private onKeySpacedown():void{
+        console.log("jump");
+    }
+    private onKeySpaceup():void{
+        console.log("stop jumping");
     }
 
 }
