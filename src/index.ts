@@ -1,7 +1,7 @@
 import { Application, Loader} from 'pixi.js'
 import { assets } from './assets';
 import { Scene } from './scenes/Scene';
-import { Keyboard } from './util.ts/Keyboard';
+import { Keyboard } from './Game/Utils/Keyboard';
 
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,

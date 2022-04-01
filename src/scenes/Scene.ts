@@ -1,7 +1,8 @@
 import { Container} from "pixi.js";
 import { Board } from "../Game/Board";
 import { ScoreAndRating } from "../Game/ScoreAndRating";
-import { WalkingWolf } from "../Game/WalkingWolf";
+import { WalkingWolf } from "../Game/Npcs/WalkingWolf";
+import { Larry } from "../Game/Npcs/Larry";
 
 export class Scene extends Container {
 
@@ -19,7 +20,11 @@ export class Scene extends Container {
         walkingWolfLeft.position.set(780,590);
         walkingWolfRight.position.set(500,590);
         walkingWolfRight.scale.set(-1,1);
-        this.addChild(walkingWolfLeft,walkingWolfRight);
+
+        const modelLarry: Larry = new Larry();
+        modelLarry.position.set(150,360);
+
+        this.addChild(walkingWolfLeft,walkingWolfRight,modelLarry);
 
     }
 

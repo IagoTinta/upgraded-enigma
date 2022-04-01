@@ -1,18 +1,18 @@
 import { Container, Sprite, Text, Texture} from "pixi.js";
-import { Keyboard } from "../util.ts/Keyboard";
+import { Keyboard } from "./Utils/Keyboard";
 import { Button } from "./Utils/Button";
+import { ToggleButton } from "./Utils/ToggleButton";
 
 export class ScoreAndRating extends Container {
 
     private Exit:Button;
     //private lastKeyPressed:Text;
     private rePlay:Button;
-    private changeSound: Button;
+    private changeSound: ToggleButton;
 
     constructor() {
 
         super();
-
         const menuSuperior: Container = new Container();
         this.Exit = new Button(
             Texture.from("BExit"),
@@ -23,10 +23,13 @@ export class ScoreAndRating extends Container {
             Texture.from("SrePlay"),
             Texture.from("WrePlay")
         );
-        this.changeSound = new Button(
+        this.changeSound = new ToggleButton(
             Texture.from("BmusicOn"),
             Texture.from("SmusicOn"),
-            Texture.from("WmusicOn")
+            Texture.from("WmusicOn"),
+            Texture.from("BmusicOff"),
+            Texture.from("SmusicOff"),
+            Texture.from("WmusicOff"),
         )
         this.Exit.position.x = 790;
         this.rePlay.position.x = 685;

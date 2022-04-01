@@ -25,4 +25,11 @@ export const assets = [
     {url:"./ScoreBoardUtils/SmallMusicOn.png", name:"SmusicOn"},
     {url:"./ScoreBoardUtils/SmallMusicOff.png", name:"SmusicOff"},
     {url:"./ScoreBoardUtils/SmallReturn.png", name:"SrePlay"},
+    
+    {url:"./Larry/walkLarry1.png", name:"walkLarry1"},
+    {url:"./Larry/walkLarry2.png", name:"walkLarry2"},
+    {url:"./Larry/walkLarry3.png", name:"walkLarry3"},
+    {url:"./Larry/walkLarry4.png", name:"walkLarry4"},
+    {url:"./Larry/walkLarry5.png", name:"walkLarry5"},
+    {url:"./Larry/walkLarry6.png", name:"walkLarry6"},
 ];
