@@ -1,12 +1,17 @@
-import { AnimatedSprite, Container, Texture } from "pixi.js";
+import { AnimatedSprite, Container, Texture} from "pixi.js";
+import { InterUpdateable } from "../Utils/InterUpdateable";
+import { Keyboard } from "../Utils/Keyboard";
 
 
-export class Larry extends Container{
+export class Larry extends Container implements InterUpdateable{
+
+    private walkingLarry: AnimatedSprite;
+    private facingRight:boolean;
 
     constructor(){
 
         super();
-        const walkingLarry: AnimatedSprite = new AnimatedSprite (
+        this.walkingLarry = new AnimatedSprite (
             [
                 Texture.from("walkLarry1"),
                 Texture.from("walkLarry2"),
@@ -14,14 +19,32 @@ export class Larry extends Container{
                 Texture.from("walkLarry4"),
                 Texture.from("walkLarry5"),
                 Texture.from("walkLarry6"),
-            ], true
+            ], false
         );
-        walkingLarry.anchor.set(0.5);
-        walkingLarry.scale.set(2);
-        walkingLarry.play();
-        walkingLarry.animationSpeed = 0.4;
-        this.addChild(walkingLarry);
+        this.walkingLarry.anchor.set(0.5);
+        this.walkingLarry.scale.set(2.5);
+        this.walkingLarry.play();
+        this.walkingLarry.animationSpeed = 0.175;
+        this.addChild(this.walkingLarry);
+        this.facingRight = true;
 
+    }
+    public update(deltaFrame: number, _deltaTime: number): void {
+        this.walkingLarry.update(deltaFrame);
+        if (Keyboard.state.get("KeyD")) {
+            this.walkingLarry.x += 5;
+            if (!this.facingRight) {
+                this.walkingLarry.scale.set(2.5);
+                this.facingRight=true;
+            }
+        }
+        if (Keyboard.state.get("KeyA")) {
+            this.walkingLarry.x -= 5;
+            if (this.facingRight){
+                this.walkingLarry.scale.set(-2.5,2.5);
+                this.facingRight = false;
+            }
+        }
     }
 
 }

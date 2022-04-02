@@ -6,7 +6,7 @@ export class ToggleButton extends Container {
     
     private toggledOn:Button;
     private toggledOff:Button;
-    private state:boolean;
+    public state:boolean;
     
     constructor(toggledOnDef:Texture,toggledOnDown:Texture,toggledOnOver:Texture,
         toggledOffDef:Texture,toggledOffDown:Texture,toggledOffOver:Texture,) {

@@ -1,4 +1,4 @@
-import { Container} from "pixi.js";
+import { Container, Ticker} from "pixi.js";
 import { Board } from "../Game/Board";
 import { ScoreAndRating } from "../Game/ScoreAndRating";
 import { WalkingWolf } from "../Game/Npcs/WalkingWolf";
@@ -25,6 +25,9 @@ export class Scene extends Container {
         modelLarry.position.set(150,360);
 
         this.addChild(walkingWolfLeft,walkingWolfRight,modelLarry);
+        Ticker.shared.add(function(deltaFrame){
+            modelLarry.update(deltaFrame,Ticker.shared.deltaMS);
+        })
 
     }
 
