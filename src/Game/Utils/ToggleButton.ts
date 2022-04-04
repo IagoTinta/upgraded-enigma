@@ -16,6 +16,7 @@ export class ToggleButton extends Container {
         this.toggledOff = new Button(toggledOffDef,toggledOffDown,toggledOffOver);
         this.toggledOff.visible = false;
         this.state = true;
+        this.addChild(this.toggledOn,this.toggledOff);
 
     }
 

@@ -22,7 +22,7 @@ export class Scene extends Container {
         walkingWolfRight.scale.set(-1,1);
 
         const modelLarry: Larry = new Larry();
-        modelLarry.position.set(150,360);
+        modelLarry.position.set(100,600);
 
         this.addChild(walkingWolfLeft,walkingWolfRight,modelLarry);
         Ticker.shared.add(function(deltaFrame){

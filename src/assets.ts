@@ -7,7 +7,6 @@ export const assets = [
 
     {url:"./ScoreBoardUtils/GlassPanel.png", name:"scoresPanel"},
     {url:"./ScoreBoardUtils/MetalPanelRed.png", name:"Board"},
-    {url:"./ScoreBoardUtils/Diamond.png", name:"bottomDiamond"},
 
     {url:"./ScoreBoardUtils/BlackCircle1.png", name:"BfirstPlace"},
     {url:"./ScoreBoardUtils/BlackCircle2.png", name:"BsecondPlace"},
@@ -32,4 +31,7 @@ export const assets = [
     {url:"./Larry/walkLarry4.png", name:"walkLarry4"},
     {url:"./Larry/walkLarry5.png", name:"walkLarry5"},
     {url:"./Larry/walkLarry6.png", name:"walkLarry6"},
+    {url:"./Larry/idleLarry.png", name:"idleLarry"},
+    {url:"./Larry/crouchLarry3.png", name:"crouchLarry3"},
+    {url:"./Larry/crouchLarryReversed.png", name:"crouchLarryReversed"},
 ];
