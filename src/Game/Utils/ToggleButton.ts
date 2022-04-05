@@ -4,9 +4,10 @@ import { Button } from "./Button";
 
 export class ToggleButton extends Container {
     
+    public static readonly TOGGLE_EVENT:string = "toggledButtonEvent";
     private toggledOn:Button;
     private toggledOff:Button;
-    public state:boolean;
+    private state:boolean = true;
     
     constructor(toggledOnDef:Texture,toggledOnDown:Texture,toggledOnOver:Texture,
         toggledOffDef:Texture,toggledOffDown:Texture,toggledOffOver:Texture,) {
@@ -14,23 +15,34 @@ export class ToggleButton extends Container {
         super();
         this.toggledOn = new Button(toggledOnDef,toggledOnDown,toggledOnOver);
         this.toggledOff = new Button(toggledOffDef,toggledOffDown,toggledOffOver);
-        this.toggledOff.visible = false;
-        this.state = true;
+        this.toggledOn.on("buttonClick",this.toggle, this);
+        this.toggledOff.on("buttonClick",this.toggle, this);
         this.addChild(this.toggledOn,this.toggledOff);
 
     }
+    public getState() : boolean {
+        return this.state;
+    }
 
-    public onButtonToggled():void {
-        if(this.state = true){
-            this.state = false;
-            this.toggledOn.visible = false;
-            this.toggledOff.visible = true;
-        } else {
-            this.state = true;
+    public setState(value: boolean) {
+        this.state = value;
+        this.fixState();
+    }
+
+    public toggle() {
+        this.state = !this.state;
+        this.emit(ToggleButton.TOGGLE_EVENT, this.state);
+    }
+    
+    private fixState() {
+        if (this.state) {
             this.toggledOff.visible = false;
             this.toggledOn.visible = true;
         }
-
+        else {
+            this.toggledOff.visible = true;
+            this.toggledOn.visible = false;
+        }
     }
 
 }

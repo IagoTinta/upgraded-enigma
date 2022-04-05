@@ -14,6 +14,7 @@ export const assets = [
     {url:"./ScoreBoardUtils/BlackCross.png", name:"BExit"},
     {url:"./ScoreBoardUtils/EmptyStar.png", name:"emptyStar"},
     {url:"./ScoreBoardUtils/BlackMusicOn.png", name:"BmusicOn"},
+    {url:"./ScoreBoardUtils/BlackMusicOff.png", name:"BmusicOff"},
     {url:"./ScoreBoardUtils/BlackReturn.png", name:"BrePlay"},
     {url:"./ScoreBoardUtils/Star.png", name:"Star"},
     {url:"./ScoreBoardUtils/WhiteCross.png", name:"WExit"},

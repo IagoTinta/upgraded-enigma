@@ -33,6 +33,9 @@ export class ScoreAndRating extends Container {
         )
         this.Exit.position.x = 790;
         this.rePlay.position.x = 685;
+        this.changeSound.on(ToggleButton.TOGGLE_EVENT, (newState)=>{
+            console.log("sound changed to:", newState)
+        });
         menuSuperior.scale.set(0.65);
         menuSuperior.position.set(380,90);
 
