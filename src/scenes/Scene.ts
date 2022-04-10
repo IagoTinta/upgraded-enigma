@@ -9,6 +9,9 @@ export class Scene extends Container {
     constructor() {
 
         super();
+        const modelLarry: Larry = new Larry();
+        modelLarry.position.set(1000,625);
+        this.addChild(modelLarry);
 
         const completeBoard: Board = new Board();
 
@@ -21,10 +24,8 @@ export class Scene extends Container {
         walkingWolfRight.position.set(500,590);
         walkingWolfRight.scale.set(-1,1);
 
-        const modelLarry: Larry = new Larry();
-        modelLarry.position.set(100,600);
 
-        this.addChild(walkingWolfLeft,walkingWolfRight,modelLarry);
+        this.addChild(walkingWolfLeft,walkingWolfRight);
         Ticker.shared.add(function(deltaFrame){
             modelLarry.update(deltaFrame,Ticker.shared.deltaMS);
         })

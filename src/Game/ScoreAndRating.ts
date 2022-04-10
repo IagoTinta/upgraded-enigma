@@ -29,13 +29,14 @@ export class ScoreAndRating extends Container {
             Texture.from("WmusicOn"),
             Texture.from("BmusicOff"),
             Texture.from("SmusicOff"),
-            Texture.from("WmusicOff"),
+            Texture.from("WmusicOff")
         )
         this.Exit.position.x = 790;
         this.rePlay.position.x = 685;
-        this.changeSound.on(ToggleButton.TOGGLE_EVENT, (newState)=>{
+        this.changeSound.on("toggledButtonEvent", (newState)=>{
             console.log("sound changed to:", newState)
         });
+        this.changeSound.on("pointerdown",this.onButtonClick, this)
         menuSuperior.scale.set(0.65);
         menuSuperior.position.set(380,90);
 
@@ -126,5 +127,10 @@ export class ScoreAndRating extends Container {
     private onKeySpaceup():void{
         console.log("stop jumping");
     }
+    private onButtonClick():void {
+        console.log("my sound is", this.changeSound.State);
+        this.changeSound.State = !this.changeSound.State;
+        console.log("but i changed it to", this.changeSound.State);
+    } 
 
 }

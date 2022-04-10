@@ -3,13 +3,16 @@ import { assets } from './assets';
 import { Scene } from './scenes/Scene';
 import { Keyboard } from './Game/Utils/Keyboard';
 
+export const WIDTH = 1280;
+export const HEIGHT = 720;
+
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
 	resolution: window.devicePixelRatio || 1,
 	autoDensity: true,
 	backgroundColor: 0x6df920,
-	width: 1280,
-	height: 720
+	width: WIDTH,
+	height: HEIGHT,
 });
 
 Keyboard.initialize();

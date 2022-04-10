@@ -20,11 +20,11 @@ export class ToggleButton extends Container {
         this.addChild(this.toggledOn,this.toggledOff);
 
     }
-    public getState() : boolean {
+    public get State() : boolean {
         return this.state;
     }
 
-    public setState(value: boolean) {
+    public set State(value: boolean) {
         this.state = value;
         this.fixState();
     }
