@@ -1,4 +1,5 @@
 import { AnimatedSprite, Container, Sprite, Texture} from "pixi.js";
+//import { WIDTH } from "../..";
 import { PhysicsContainer } from "../PhysicsContainer";
 import { InterUpdateable } from "../Utils/InterUpdateable";
 import { Keyboard } from "../Utils/Keyboard";
@@ -8,7 +9,7 @@ export class Larry extends Container implements InterUpdateable{
 
     private walkingLarry: AnimatedSprite;
     private idleLarry:Sprite;
-    private facingRight:boolean;
+    private crouchingLarry:AnimatedSprite;
     private physicsLarry: PhysicsContainer;
 
     constructor(){
@@ -25,6 +26,11 @@ export class Larry extends Container implements InterUpdateable{
             ], false
         );
         this.idleLarry = Sprite.from("idleLarry");
+        this.crouchingLarry = new AnimatedSprite (
+            [
+                Texture.from("crouchLarry3")
+            ], false
+        )
         this.idleLarry.anchor.set(0.5);
         this.idleLarry.scale.set(2.5);
         this.walkingLarry.anchor.set(0.5);
@@ -32,11 +38,14 @@ export class Larry extends Container implements InterUpdateable{
         this.walkingLarry.play();
         this.walkingLarry.animationSpeed = 0.175;
         this.walkingLarry.visible = false;
-        this.facingRight = true;
+        this.crouchingLarry.anchor.set(0.5);
+        this.crouchingLarry.scale.set(2.5);
+        this.crouchingLarry.position.y = 18;
+        this.crouchingLarry.play();
+        this.crouchingLarry.visible = false;
 
         this.physicsLarry = new PhysicsContainer();
-        this.physicsLarry.speed.x = 300;
-        this.physicsLarry.addChild(this.walkingLarry,this.idleLarry);
+        this.physicsLarry.addChild(this.walkingLarry,this.idleLarry,this.crouchingLarry);
         
         this.addChild(this.physicsLarry);
 
@@ -47,13 +56,13 @@ export class Larry extends Container implements InterUpdateable{
         if (Keyboard.state.get("KeyD")) {
             this.walkingLarry.visible = true;
             this.idleLarry.visible = false;
+            this.physicsLarry.speed.x = 300;
             this.physicsLarry.update(Math.abs(dt));
-            if (!this.facingRight) {
+            if (this.physicsLarry.speed.x > 0) {
                 this.walkingLarry.scale.set(2.5);
-                this.facingRight=true;
             }
         } else {
-            if(this.facingRight) {
+            if(this.physicsLarry.speed.x >= 0) {
                 this.walkingLarry.visible = false;
                 this.idleLarry.visible = true;
                 this.idleLarry.scale.set(2.5);
@@ -68,14 +77,22 @@ export class Larry extends Container implements InterUpdateable{
         if (Keyboard.state.get("KeyA")) {
             this.walkingLarry.visible = true;
             this.idleLarry.visible = false;
-            this.physicsLarry.update(-Math.abs(dt));
-            if (this.facingRight){
+            this.physicsLarry.speed.x = -300;
+            this.physicsLarry.update(Math.abs(dt));
+            if (this.physicsLarry.speed.x < 0){
                 this.walkingLarry.scale.set(-2.5,2.5);
-                this.facingRight = false;
             }
         }
-        if (Keyboard.state.get("KeyW")) {
-            
+        if (Keyboard.state.get("KeyS")) {
+            this.idleLarry.visible = false;
+            this.crouchingLarry.visible = true;
+            if (this.physicsLarry.speed.x < 0) {
+                this.crouchingLarry.scale.set(-2.5,2.5);
+            } else {
+                this.crouchingLarry.scale.set(2.5);
+            }
+        } else if (!Keyboard.state.get("KeyS")) {
+            this.crouchingLarry.visible = false;
         }
     }
 
