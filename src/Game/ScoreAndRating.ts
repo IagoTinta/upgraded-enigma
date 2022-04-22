@@ -33,7 +33,7 @@ export class ScoreAndRating extends Container {
         )
         this.Exit.position.x = 790;
         this.rePlay.position.x = 685;
-        this.changeSound.on("toggledButtonEvent", (newState)=>{
+        this.changeSound.on(ToggleButton.TOGGLE_EVENT, (newState)=>{
             console.log("sound changed to:", newState)
         });
         this.changeSound.on("pointerdown",this.onButtonClick, this)
