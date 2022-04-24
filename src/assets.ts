@@ -38,4 +38,7 @@ export const assets = [
     {url:"./Larry/jumpLarry1.png", name:"jumpLarry1"},
     {url:"./Larry/jumpLarry2.png", name:"jumpLarry2"},
     {url:"./Larry/jumpLarry3.png", name:"jumpLarry3"},
+
+    {url:"./Frostwoods/Background.png", name:"Background"},
+    {url:"./Frostwoods/Floor.png", name:"Floor"},
 ];

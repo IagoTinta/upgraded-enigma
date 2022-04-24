@@ -1,5 +1,4 @@
 import { Container, Sprite, Text, Texture} from "pixi.js";
-import { Keyboard } from "./Utils/Keyboard";
 import { Button } from "./Utils/Button";
 import { ToggleButton } from "./Utils/ToggleButton";
 
@@ -84,49 +83,9 @@ export class ScoreAndRating extends Container {
         this.lastKeyPressed.position.set(640,500);
         this.addChild(this.lastKeyPressed);*/
 
-        Keyboard.down.on("KeyW", this.onKeyWdown, this)
-        Keyboard.up.on("KeyW", this.onKeyWup, this)
-        Keyboard.down.on("KeyA", this.onKeyAdown, this)
-        Keyboard.up.on("KeyA", this.onKeyAup, this)
-        Keyboard.down.on("KeyS", this.onKeySdown, this)
-        Keyboard.up.on("KeyS", this.onKeySup, this)
-        Keyboard.down.on("KeyD", this.onKeyDdown, this)
-        Keyboard.up.on("KeyD", this.onKeyDup, this)
-        Keyboard.down.on("Space", this.onKeySpacedown, this)
-        Keyboard.up.on("Space", this.onKeySpaceup, this)
 
     }
 
-    private onKeyWdown():void{
-        console.log("jump");
-    }
-    private onKeyWup():void{
-        console.log("stop jumping");
-    }
-    private onKeyAdown():void{
-        console.log("move left");
-    }
-    private onKeyAup():void{
-        console.log("stop left");
-    }
-    private onKeySdown():void{
-        console.log("crouch");
-    }
-    private onKeySup():void{
-        console.log("stop crouching");
-    }
-    private onKeyDdown():void{
-        console.log("move right");
-    }
-    private onKeyDup():void{
-        console.log("stop right");
-    }
-    private onKeySpacedown():void{
-        console.log("jump");
-    }
-    private onKeySpaceup():void{
-        console.log("stop jumping");
-    }
     private onButtonClick():void {
         console.log("my sound is", this.changeSound.State);
         this.changeSound.State = !this.changeSound.State;
