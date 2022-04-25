@@ -1,4 +1,5 @@
 import { Container, Sprite, Ticker, Text} from "pixi.js";
+import { WIDTH } from "..";
 //import { Board } from "../Game/Board";
 //import { ScoreAndRating } from "../Game/ScoreAndRating";
 //import { WalkingWolf } from "../Game/Npcs/WalkingWolf";
@@ -33,7 +34,7 @@ export class Scene extends Container {
         this.addChild(FrostwoodsLevel);
         
         const modelLarry: Larry = new Larry();
-        modelLarry.position.set(1000,617);
+        modelLarry.position.set(WIDTH/2,617);
         this.addChild(modelLarry);
 
         Ticker.shared.add(function(deltaFrame){

@@ -1,16 +1,22 @@
-import { AnimatedSprite, Sprite, Texture} from "pixi.js";
+import { AnimatedSprite, Container, Sprite, Texture} from "pixi.js";
+import { WIDTH } from "../..";
 //import { WIDTH } from "../..";
 import { PhysicsContainer } from "../PhysicsContainer";
 import { InterUpdateable } from "../Utils/InterUpdateable";
 import { Keyboard } from "../Utils/Keyboard";
 
 
-export class Larry extends PhysicsContainer implements InterUpdateable{
+export class Larry extends Container implements InterUpdateable{
 
     private walkingLarry: AnimatedSprite;
     private idleLarry:Sprite;
     private crouchingLarry:AnimatedSprite;
     private jumpingLarry:Sprite;
+    private physicsLarry:PhysicsContainer;
+
+    private static readonly GRAVITY = 100;
+    private static readonly MOVE_SPEED = 300;
+    public canJump = true;
 
     constructor(){
 
@@ -48,13 +54,17 @@ export class Larry extends PhysicsContainer implements InterUpdateable{
         this.jumpingLarry.scale.set(2.5);
         this.jumpingLarry.visible = false;
 
-        this.acceleration.y = 500;
-        this.addChild(
+        this.physicsLarry = new PhysicsContainer();
+        this.physicsLarry.acceleration.y = -Larry.GRAVITY;
+        this.physicsLarry.addChild(
             this.walkingLarry,
             this.idleLarry,
             this.crouchingLarry,
             this.jumpingLarry
         );
+        this.addChild(this.physicsLarry);
+
+        Keyboard.down.on("KeyW", this.jump, this);
 
     }
     public update(deltaFrame: number, deltaTime: number): void {
@@ -64,7 +74,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable{
             this.idleLarry.visible = false;
             this.walkingLarry.visible = false;
             this.crouchingLarry.visible = true;
-            if (this.speed.x < 0) {
+            if (this.physicsLarry.speed.x < 0) {
                 this.crouchingLarry.scale.set(-2.5,2.5);
             } else {
                 this.crouchingLarry.scale.set(2.5);
@@ -72,15 +82,17 @@ export class Larry extends PhysicsContainer implements InterUpdateable{
         } else {
             this.crouchingLarry.visible = false;
             if (Keyboard.state.get("KeyD")) {
+                console.log(Larry.GRAVITY);
+                console.log(this.physicsLarry.acceleration);
                 this.walkingLarry.visible = true;
                 this.idleLarry.visible = false;
-                this.speed.x = 300;
-                this.update(Math.abs(dt));
-                if (this.speed.x > 0) {
+                this.physicsLarry.speed.x = Larry.MOVE_SPEED;
+                this.physicsLarry.update(Math.abs(dt));
+                if (this.physicsLarry.speed.x > 0) {
                     this.walkingLarry.scale.set(2.5);
                 }
             } else {
-                if(this.speed.x >= 0) {
+                if(this.physicsLarry.speed.x >= 0) {
                     this.walkingLarry.visible = false;
                     this.idleLarry.visible = true;
                     this.idleLarry.scale.set(2.5);
@@ -95,24 +107,33 @@ export class Larry extends PhysicsContainer implements InterUpdateable{
             if (Keyboard.state.get("KeyA")) {
                 this.walkingLarry.visible = true;
                 this.idleLarry.visible = false;
-                this.speed.x = -300;
-                this.update(Math.abs(dt));
-                if (this.speed.x < 0){
+                this.physicsLarry.speed.x = -Larry.MOVE_SPEED;
+                this.physicsLarry.update(Math.abs(dt));
+                if (this.physicsLarry.speed.x < 0){
                     this.walkingLarry.scale.set(-2.5,2.5);
                 }
             }
         }
-        if (this.x > 255) {
-            this.x = 255;
-            this.speed.x = 0;
+
+        if (this.physicsLarry.x > ((WIDTH/2)-25)) {
+            this.physicsLarry.x = (WIDTH/2)-25;
+            this.physicsLarry.speed.x = 0;
         }
-        if (this.x < -965) {
-            this.x = -965;
-            this.speed.x = 0;
+        if (this.physicsLarry.x < -((WIDTH/2)-25)) {
+            this.physicsLarry.x = -((WIDTH/2)-25);
+            this.physicsLarry.speed.x = 0;
         }
-        if (this.y < 617) {
-            this.y = 0;
-            this.acceleration.y = 0;
+        if (this.physicsLarry.y > 617) {
+            this.canJump = true;
+            this.physicsLarry.y = 0;
+            this.physicsLarry.acceleration.y = 0;
+        }
+    }
+
+    private jump() {
+        if (this.canJump) {
+            this.canJump = false;
+            this.physicsLarry.speed.y = -Larry.MOVE_SPEED;
         }
     }
 
