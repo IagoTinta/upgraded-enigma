@@ -4,6 +4,7 @@ export const assets = [
     {url:"./WalkingWolf/walk2.png", name:"walkingWolf2"},
     {url:"./WalkingWolf/walk3.png", name:"walkingWolf3"},
     {url:"./WalkingWolf/walk4.png", name:"walkingWolf4"},
+    {url:"./Majora.png", name:"majora"},
 
     {url:"./ScoreBoardUtils/GlassPanel.png", name:"scoresPanel"},
     {url:"./ScoreBoardUtils/MetalPanelRed.png", name:"Board"},
