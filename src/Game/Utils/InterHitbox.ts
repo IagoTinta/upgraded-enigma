@@ -7,7 +7,7 @@ export interface InterHitbox {
 
 }
 
-export function checkCollision(objectA:InterHitbox, objectB:InterHitbox):boolean {
+export function checkCollision(objectA:InterHitbox, objectB:InterHitbox):Rectangle | null {
 
     const rectA = objectA.getHitbox();
     const rectB = objectB.getHitbox();
@@ -22,9 +22,14 @@ export function checkCollision(objectA:InterHitbox, objectB:InterHitbox):boolean
     const makesSenseVertical = bottommostTop < topmostBottom;
 
     if (makesSenseHorizontal && makesSenseVertical) {
-        return true;
+        const retval = new Rectangle();
+        retval.x = rightmostLeft;
+        retval.y = bottommostTop;
+        retval.width = leftmostRight - rightmostLeft;
+        retval.height = topmostBottom - bottommostTop;
+        return retval;
     } else {
-        return false;
+        return null;
     }
 
 }

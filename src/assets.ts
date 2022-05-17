@@ -40,6 +40,20 @@ export const assets = [
     {url:"./Larry/jumpLarry2.png", name:"jumpLarry2"},
     {url:"./Larry/jumpLarry3.png", name:"jumpLarry3"},
 
-    {url:"./Frostwoods/Background.png", name:"Background"},
-    {url:"./Frostwoods/Floor.png", name:"Floor"},
+    {url:"./Enemies/idlePeon.png", name:"idlePeon"},
+    {url:"./Enemies/walkingPeon1.png", name:"walkingPeon1"},
+    {url:"./Enemies/walkingPeon2.png", name:"walkingPeon2"},
+    {url:"./Enemies/walkingPeon3.png", name:"walkingPeon3"},
+    {url:"./Enemies/walkingPeon4.png", name:"walkingPeon4"},
+    {url:"./Enemies/walkingPeon5.png", name:"walkingPeon5"},
+    {url:"./Enemies/walkingPeon6.png", name:"walkingPeon6"},
+
+    {url:"./Frostwoods/FullBackground.png", name:"FullBackground"},
+    {url:"./Frostwoods/Background1.png", name:"Background1"},
+    {url:"./Frostwoods/Background2.png", name:"Background2"},
+    {url:"./Frostwoods/Background3.png", name:"Background3"},
+    {url:"./Frostwoods/Background4.png", name:"Background4"},
+    {url:"./Frostwoods/Background5.png", name:"Background5"},
+    {url:"./Frostwoods/Background6.png", name:"Background6"},
+    {url:"./Frostwoods/Background7.png", name:"Background7"},
 ];

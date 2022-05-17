@@ -1,9 +1,7 @@
-import { AnimatedSprite, Graphics, Rectangle, Sprite, Texture} from "pixi.js";
-import { WIDTH } from "../..";
+import { AnimatedSprite, Graphics, ObservablePoint, Rectangle, Sprite, Texture} from "pixi.js";
 import { PhysicsContainer } from "../PhysicsContainer";
 import { InterHitbox } from "../Utils/InterHitbox";
 import { InterUpdateable } from "../Utils/InterUpdateable";
-//import { InterUpdateable } from "../Utils/InterUpdateable";
 import { Keyboard } from "../Utils/Keyboard";
 
 
@@ -18,11 +16,15 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
     //hitboxes
     private hitbox:Graphics;
 
+    //stats
+    private health = 100;
+
     //constantes y condiciones
     private static readonly GRAVITY = 200;
     private static readonly MOVE_SPEED = 300;
     public canJump = true;
     private facingRight = true;
+    public damageCheck = true;
 
     constructor(){
 
@@ -57,7 +59,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
         this.jumpingLarry.visible = false;
 
         this.hitbox = new Graphics();
-        this.hitbox.beginFill(0xFF00FF, 0.5);
+        this.hitbox.beginFill(0x268212, 0.5);
         this.hitbox.drawRect(0,0,18,46);
         this.hitbox.endFill();
         this.hitbox.position.set(-9,-23);
@@ -73,7 +75,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
 
     }
     public override update(deltaMS: number): void {
-        const dt = deltaMS / 1000;
+        const dt = deltaMS / (60);
         super.update(dt);
         this.walkingLarry.update(dt / (1/60));
         if (Keyboard.state.get("KeyS") && this.canJump) {
@@ -100,6 +102,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 this.walkingLarry.visible = false;
                 if (this.canJump) {
                     this.idleLarry.visible = true;
+                    this.jumpingLarry.visible = false;
                 }
                 this.speed.x = 0;
                 if(this.facingRight) {
@@ -129,25 +132,45 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
         } else if (Keyboard.state.get("KeyA") && !this.canJump && this.y < 617) {
             this.speed.x = -Larry.MOVE_SPEED;
             this.scale.set(-2.5,2.5);
-        } else  if (this.y > 617) {
+        } else  if (this.y > 617 || this.speed.y == 0) {
             this.jumpingLarry.visible = false;
             this.canJump = true;
-            this.y = 617;
-            this.speed.y = 0;
         }
 
-        if (this.x > WIDTH-25) {
-            this.x = WIDTH-25;
-            this.speed.x = 0;
-        }
-        if (this.x < 25) {
-            this.x = 25;
-            this.speed.x = 0;
-        }
     }
 
     public getHitbox():Rectangle {
         return this.hitbox.getBounds();
+    }
+
+    public separate(overlap: Rectangle, myMajora: ObservablePoint<any>) {
+        if (overlap.width < overlap.height){
+            if (this.x > myMajora.x) {
+                this.x += overlap.width;
+            } else if (this.x < myMajora.x){
+                this.x -= overlap.width;
+            }
+        } else {
+            if (this.y < myMajora.y) {
+                this.y -= overlap.height;
+                this.canJump = true;
+            } else if (this.x > myMajora.y){
+                this.y += overlap.height;
+            }
+        }
+
+    }
+
+    public receiveDamage(damage: number) {
+        this.health -= damage;
+    }
+
+    public isDead():boolean {
+       if(this.health <= 0) {
+           return true;
+       } else {
+           return false;
+       }
     }
 
 }
