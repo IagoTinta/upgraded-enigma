@@ -78,15 +78,16 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
         const dt = deltaMS / (60);
         super.update(dt);
         this.walkingLarry.update(dt / (1/60));
+        //console.log(this.health);
         if (Keyboard.state.get("KeyS") && this.canJump) {
             this.idleLarry.visible = false;
             this.walkingLarry.visible = false;
             this.crouchingLarry.visible = true;
             this.speed.x = 0;
             if (!this.facingRight) {
-                this.scale.set(-2.5,2.5);
+                this.scale.set(-4,4);
             } else {
-                this.scale.set(2.5);
+                this.scale.set(4);
             }
         } else {
             this.crouchingLarry.visible = false;
@@ -96,7 +97,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 this.speed.x = Larry.MOVE_SPEED;
                 this.facingRight = true;
                 if (this.facingRight) {
-                    this.scale.set(2.5);
+                    this.scale.set(4);
                 }
             } else {
                 this.walkingLarry.visible = false;
@@ -106,9 +107,9 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 }
                 this.speed.x = 0;
                 if(this.facingRight) {
-                    this.scale.set(2.5);
+                    this.scale.set(4);
                 } else {
-                    this.scale.set(-2.5,2.5);
+                    this.scale.set(-4,4);
                 }
             }
             if (Keyboard.state.get("KeyA") && this.canJump) {
@@ -117,44 +118,44 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 this.speed.x = -Larry.MOVE_SPEED;
                 this.facingRight = false;
                 if (!this.facingRight){
-                    this.scale.set(-2.5,2.5);
+                    this.scale.set(-4,4);
                 }
             }
         }
         if (Keyboard.state.get("KeyW") && this.canJump) {
             this.idleLarry.visible = false;
             this.jumpingLarry.visible = true;
-            this.speed.y = -Larry.MOVE_SPEED;
+            this.speed.y = -Larry.MOVE_SPEED-100;
             this.canJump = false;
-        } else if (Keyboard.state.get("KeyD") && !this.canJump && this.y < 617) {
+        } else if (Keyboard.state.get("KeyD") && !this.canJump && this.y < 900) {
             this.speed.x = Larry.MOVE_SPEED;
-            this.scale.set(2.5);
-        } else if (Keyboard.state.get("KeyA") && !this.canJump && this.y < 617) {
+            this.scale.set(4);
+        } else if (Keyboard.state.get("KeyA") && !this.canJump && this.y < 900) {
             this.speed.x = -Larry.MOVE_SPEED;
-            this.scale.set(-2.5,2.5);
-        } else  if (this.y > 617 || this.speed.y == 0) {
+            this.scale.set(-4,4);
+        } else  if (this.y > 900 || this.speed.y == 0) {
             this.jumpingLarry.visible = false;
             this.canJump = true;
         }
-
+        
     }
 
     public getHitbox():Rectangle {
         return this.hitbox.getBounds();
     }
 
-    public separate(overlap: Rectangle, myMajora: ObservablePoint<any>) {
+    public separate(overlap: Rectangle, objeto: ObservablePoint<any>) {
         if (overlap.width < overlap.height){
-            if (this.x > myMajora.x) {
+            if (this.x > objeto.x) {
                 this.x += overlap.width;
-            } else if (this.x < myMajora.x){
+            } else if (this.x < objeto.x){
                 this.x -= overlap.width;
             }
         } else {
-            if (this.y < myMajora.y) {
+            if (this.y < objeto.y) {
                 this.y -= overlap.height;
                 this.canJump = true;
-            } else if (this.x > myMajora.y){
+            } else if (this.x > objeto.y){
                 this.y += overlap.height;
             }
         }

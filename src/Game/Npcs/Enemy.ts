@@ -10,11 +10,11 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
     private walkingPeon: AnimatedSprite;
     private hitbox: Graphics;
     private level: number;
+    private static readonly MOVE_SPEED = 150;
 
     constructor(level: number) {
         
         super();
-        this.level = level;
         this.idlePeon = Sprite.from("idlePeon");
         this.walkingPeon = new AnimatedSprite(
             [
@@ -28,18 +28,19 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
         )
         this.idlePeon.anchor.set(0.5);
         this.walkingPeon.anchor.set(0.5);
-        this.idlePeon.scale.set(2.5);
-        this.walkingPeon.scale.set(2.5);
         this.walkingPeon.play();
         this.walkingPeon.animationSpeed = 0.175;
         this.walkingPeon.visible = false;
         this.addChild(this.idlePeon,this.walkingPeon);
 
+        this.level = level;
+        this.speed.x = (Enemy.MOVE_SPEED * (Math.random() < 0.5 ? -1 : 1)) + (Math.random()*100 - 50);
+
         this.hitbox = new Graphics();
         this.hitbox.beginFill(0xFF00FF, 0.5);
-        this.hitbox.drawRect(0,0,50,90);
+        this.hitbox.drawRect(0,0,20,37);
         this.hitbox.endFill();
-        this.hitbox.position.set(-25,-45);
+        this.hitbox.position.set(-10,-20);
         this.addChild(this.hitbox);
 
     }
@@ -48,6 +49,25 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
         const dt = deltaMS / (60);
         super.update(dt);
         this.walkingPeon.update(dt / (1/60));
+
+        if (this.speed.x > 0) {
+            this.idlePeon.visible = false;
+            this.walkingPeon.visible = true;
+            this.scale.set(4);
+        } else if (this.speed.x < 0) {
+            this.idlePeon.visible = false;
+            this.walkingPeon.visible = true;
+            this.scale.set(-4, 4);
+        } else {
+            this.idlePeon.visible = true;
+            this.walkingPeon.visible = false;
+        }
+        //console.log(this.level);
+
+    }
+
+    public resumeSpeed(): void {
+        this.speed.x = (Enemy.MOVE_SPEED * (Math.random() < 0.5 ? -1 : 1)) + (Math.random()*100 - 50);
     }
 
     public getHitbox(): Rectangle {

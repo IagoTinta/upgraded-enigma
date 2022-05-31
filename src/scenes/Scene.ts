@@ -1,18 +1,23 @@
-import { Container, Sprite, Text} from "pixi.js";
-import { WIDTH } from "..";
+import { Container, Text, Texture, TilingSprite} from "pixi.js";
+import { HEIGHT, WIDTH } from "..";
 import { Enemy } from "../Game/Npcs/Enemy";
 //import { Board } from "../Game/Board";
 //import { ScoreAndRating } from "../Game/ScoreAndRating";
 //import { WalkingWolf } from "../Game/Npcs/WalkingWolf";
 import { Larry } from "../Game/Npcs/Larry";
-import { checkCollision } from "../Game/Utils/InterHitbox";
+import { checkCollision} from "../Game/Utils/InterHitbox";
 import { InterUpdateable } from "../Game/Utils/InterUpdateable";
+import { Wall } from "../Game/WorldObjects/Wall";
 
 export class Scene extends Container implements InterUpdateable{
 
-    private modelLarry: Larry;
-    private enemy: Enemy;
+    private myLevel: Container;
+    private myLarry: Larry;
+    private enemies: Enemy[];
+    private rightWall: Wall;
+    private leftWall: Wall;
     private gameOver = false;
+    private background4: TilingSprite;
 
     constructor() {
 
@@ -31,43 +36,59 @@ export class Scene extends Container implements InterUpdateable{
         
         this.addChild(walkingWolfLeft,walkingWolfRight);*/
         
-        const FrostwoodsLevel: Container = new Container();
-        const background1:Sprite = Sprite.from("Background1");
-        const background2:Sprite = Sprite.from("Background2");
-        const background3:Sprite = Sprite.from("Background3");
-        const background4:Sprite = Sprite.from("Background4");
-        const background5:Sprite = Sprite.from("Background5");
-        const background6:Sprite = Sprite.from("Background6");
-        const background7:Sprite = Sprite.from("Background7");
-        FrostwoodsLevel.addChild(background7,
+        this.myLevel = new Container();
+        const background1 = new TilingSprite(Texture.from("Background1"),WIDTH*2,HEIGHT*2);
+        const background2 = new TilingSprite(Texture.from("Background2"),WIDTH*2,HEIGHT*2);
+        const background3 = new TilingSprite(Texture.from("Background3"),WIDTH*2,HEIGHT*2);
+        this.background4 = new TilingSprite(Texture.from("Background4"),WIDTH*2,HEIGHT*2);
+        const background5 = new TilingSprite(Texture.from("Background5"),WIDTH*2,HEIGHT*2);
+        const background6 = new TilingSprite(Texture.from("Background6"),WIDTH*2,HEIGHT*2);
+        const background7 = new TilingSprite(Texture.from("Background7"),WIDTH*2,HEIGHT*2);
+        this.myLevel.addChild(background7,
             background6,
             background5,
-            background4,
+            this.background4,
             background3,
             background2,
             background1
         );
-        FrostwoodsLevel.scale.x = 0.70;
-        FrostwoodsLevel.scale.y = 0.68;
-        this.addChild(FrostwoodsLevel);
 
-        this.modelLarry = new Larry();
-        this.modelLarry.position.set(WIDTH/2,617);
-        this.addChild(this.modelLarry);
+        this.rightWall = new Wall();
+        this.leftWall = new Wall();
+        this.rightWall.position.x = 1830;
+        this.leftWall.position.x = -100;
+        this.myLevel.addChild(this.rightWall, this.leftWall);
+
+        this.myLarry = new Larry();
+        this.myLarry.position.set(960,900);
+        this.myLevel.addChild(this.myLarry);
         
-        this.enemy = new Enemy(1);
-        this.enemy.position.set(900,630 );
-        this.addChild(this.enemy);
+        this.enemies = [];
+        const anotherEnemy1 = new Enemy(Math.floor((Math.random()*3)+1));
+        anotherEnemy1.position.set(900,925);
+        this.enemies.push(anotherEnemy1);
+        this.myLevel.addChild(anotherEnemy1);
+        const anotherEnemy2 = new Enemy(Math.floor((Math.random()*3)+1));
+        anotherEnemy2.position.set(900,925);
+        this.enemies.push(anotherEnemy2);
+        this.myLevel.addChild(anotherEnemy2);
+        const anotherEnemy3 = new Enemy(Math.floor((Math.random()*3)+1));
+        anotherEnemy3.position.set(900,925);
+        this.enemies.push(anotherEnemy3);
+        this.myLevel.addChild(anotherEnemy3);
 
         const Titulo: Text = new Text("Larry's Adventure Day", {fontSize: 40, fill:0xFFFFFF, fontFamily: "Cambria"});
         const Descripcion: Text = new Text("Plataform Autoscroller With Combat", {fontSize: 40, fill:0xFFFFFF, fontFamily: "Cambria"});
         Titulo.anchor.set(0.5);
         Descripcion.anchor.set(0.5);
-        Titulo.position.set(640,15);
-        Descripcion.position.set(640,50);
-        this.addChild(Titulo,Descripcion);
-      
+        Titulo.position.set(960,22.5);
+        Descripcion.position.set(960,60);
+        this.myLevel.addChild(Titulo,Descripcion);
 
+        this.myLevel.scale.x = 0.70;
+        this.myLevel.scale.y = 0.68;
+        this.addChild(this.myLevel);
+      
     }
 
     public update (deltaTime: number, _deltaFrame: number):void {
@@ -75,40 +96,72 @@ export class Scene extends Container implements InterUpdateable{
         if (this.gameOver) {
             return;
         }
-        this.modelLarry.update(deltaTime);
-        this.enemy.update(deltaTime);
-        //console.log(checkCollision(this.modelLarry, this.enemy));
-        const overlap = checkCollision(this.modelLarry, this.enemy);
-        if (overlap != null && this.modelLarry.damageCheck) {
+        //console.log(this.myLarry.speed.x);
+        //console.log(this.myLarry.toGlobal(this.myLevel).x);
+        this.myLarry.update(deltaTime);
 
-            //this.modelLarry.separate(overlap, this.enemy.position);
-            this.modelLarry.receiveDamage(this.enemy.dealDamage());
-            this.modelLarry.damageCheck = false;
+        for (let enemy of this.enemies) {
 
-        } else if (overlap != null) {
-            this.modelLarry.damageCheck = false;
-        } else {
-            this.modelLarry.damageCheck = true;
+            enemy.update(deltaTime);
+            const overlap = checkCollision(this.myLarry, enemy);
+            const rEnemyWall = checkCollision(enemy,this.rightWall);
+            const lEnemyWall = checkCollision(enemy,this.leftWall);
+            if (overlap != null && this.myLarry.damageCheck) {
+
+                //this.modelLarry.separate(overlap, this.enemy.position);
+                //this.modelLarry.receiveDamage(enemy.dealDamage());
+                this.myLarry.damageCheck = false;
+                enemy.speed.x = 0;
+
+            } else if (overlap != null) {
+                this.myLarry.damageCheck = false;
+            } else  if (enemy.speed.x == 0) {
+                enemy.resumeSpeed();
+            } else {
+                this.myLarry.damageCheck = true;
+            }
+
+            if (rEnemyWall != null) {
+                enemy.speed.x = -enemy.speed.x;
+            }
+            if (lEnemyWall != null) {
+                enemy.speed.x = -enemy.speed.x;
+            }
+
         }
 
-        if (this.modelLarry.y > 617 && this.modelLarry.canJump) {
-            this.modelLarry.canJump = true;
-            this.modelLarry.y = 617;
-            this.modelLarry.speed.y = 0;
+        const rLarryWall = checkCollision(this.myLarry, this.rightWall);
+        const lLarryWall = checkCollision(this.myLarry, this.leftWall);
+
+        if (rLarryWall != null) {
+            this.myLarry.separate(rLarryWall, this.rightWall.position);
+        }
+        if (lLarryWall != null) {
+            this.myLarry.separate(lLarryWall, this.leftWall.position);
         }
 
-        if (this.modelLarry.x > WIDTH-25) {
-            this.modelLarry.x = WIDTH-25;
-            this.modelLarry.speed.x = 0;
-        }
-        if (this.modelLarry.x < 25) {
-            this.modelLarry.x = 25;
-            this.modelLarry.speed.x = 0;
+        if (this.myLarry.y > 900 && this.myLarry.canJump) {
+            this.myLarry.canJump = true;
+            this.myLarry.y = 900;
+            this.myLarry.speed.y = 0;
         }
 
-        if (this.modelLarry.isDead()) {
+        if (this.myLarry.isDead()) {
             this.gameOver = true;
         }
+
+        this.myLevel.x -= 0.1 * this.worldTransform.a;
+        this.background4.tilePosition.x = this.myLevel.x;
+        this.rightWall.position.x += 0.1422725 * this.worldTransform.a;
+
+        /*if (this.enemies.length < 3) {
+            //wait
+            const anotherEnemy = new Enemy((Math.random()*3)+1);
+            anotherEnemy.update(deltaTime);
+            anotherEnemy.position.set(900,632);
+            this.enemies.push(anotherEnemy);
+            this.addChild(anotherEnemy);
+        }*/
 
     }
     
