@@ -8,10 +8,11 @@ import { Keyboard } from "../Utils/Keyboard";
 export class Larry extends PhysicsContainer implements InterUpdateable,InterHitbox {
 
     //Animaciones
-    private walkingLarry: AnimatedSprite;
-    private idleLarry:Sprite;
-    private crouchingLarry:AnimatedSprite;
-    private jumpingLarry:Sprite;
+    private walking: AnimatedSprite;
+    private idle:Sprite;
+    private crouching:AnimatedSprite;
+    private jumping:Sprite;
+    private standingAttack: AnimatedSprite;
 
     //hitboxes
     private hitbox:Graphics;
@@ -29,7 +30,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
     constructor(){
 
         super();
-        this.walkingLarry = new AnimatedSprite (
+        this.walking = new AnimatedSprite (
             [
                 Texture.from("walkLarry1"),
                 Texture.from("walkLarry2"),
@@ -39,24 +40,36 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 Texture.from("walkLarry6"),
             ], false
         );
-        this.idleLarry = Sprite.from("idleLarry");
-        this.crouchingLarry = new AnimatedSprite (
+        this.idle = Sprite.from("idleLarry");
+        this.crouching = new AnimatedSprite (
             [
                 Texture.from("crouchLarry3")
             ], false
-        )
-        this.jumpingLarry = Sprite.from("jumpLarry1");
-        this.idleLarry.anchor.set(0.5);
-        this.walkingLarry.anchor.set(0.5);
-        this.walkingLarry.play();
-        this.walkingLarry.animationSpeed = 0.175;
-        this.walkingLarry.visible = false;
-        this.crouchingLarry.anchor.set(0.5);
-        this.crouchingLarry.position.y = 7;
-        this.crouchingLarry.play();
-        this.crouchingLarry.visible = false;
-        this.jumpingLarry.anchor.set(0.5);
-        this.jumpingLarry.visible = false;
+        );
+        this.standingAttack = new AnimatedSprite (
+            [
+                Texture.from("groundAttack1"),
+                Texture.from("groundAttack2"),
+                Texture.from("groundAttack3"),
+                Texture.from("groundAttack4"),
+            ], false
+        );
+        this.jumping = Sprite.from("jumpLarry1");
+        this.idle.anchor.set(0.5);
+        this.walking.anchor.set(0.5);
+        this.walking.play();
+        this.walking.animationSpeed = 0.175;
+        this.walking.visible = false;
+        this.crouching.anchor.set(0.5);
+        this.crouching.position.y = 7;
+        this.crouching.play();
+        this.crouching.visible = false;
+        this.jumping.anchor.set(0.5);
+        this.jumping.visible = false;
+        this.standingAttack.anchor.set(0.5);
+        this.standingAttack.animationSpeed = 0.175;
+        this.standingAttack.visible = false;
+        
 
         this.hitbox = new Graphics();
         this.hitbox.beginFill(0x268212, 0.5);
@@ -66,23 +79,34 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
 
         this.acceleration.y = Larry.GRAVITY;
         this.addChild(
-            this.walkingLarry,
-            this.idleLarry,
-            this.crouchingLarry,
-            this.jumpingLarry
+            this.walking,
+            this.idle,
+            this.crouching,
+            this.jumping,
+            this.standingAttack
         );
         this.addChild(this.hitbox);
 
+        Keyboard.down.on("KeyW", this.jump, this);
+        Keyboard.down.on("Space", this.attack, this);
+
     }
+
+    public override destroy(options:any) {
+        super.destroy(options);
+        Keyboard.down.off("KeyW", this.jump);
+        Keyboard.down.off("Space", this.attack);
+    }
+
     public override update(deltaMS: number): void {
         const dt = deltaMS / (60);
         super.update(dt);
-        this.walkingLarry.update(dt / (1/60));
-        //console.log(this.health);
-        if (Keyboard.state.get("KeyS") && this.canJump) {
-            this.idleLarry.visible = false;
-            this.walkingLarry.visible = false;
-            this.crouchingLarry.visible = true;
+        this.walking.update(dt / (1/60));
+        this.standingAttack.update(dt / (1/60));
+        if (Keyboard.state.get("KeyS") && this.canJump && !this.standingAttack.playing) {
+            this.idle.visible = false;
+            this.walking.visible = false;
+            this.crouching.visible = true;
             this.speed.x = 0;
             if (!this.facingRight) {
                 this.scale.set(-4,4);
@@ -90,20 +114,20 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 this.scale.set(4);
             }
         } else {
-            this.crouchingLarry.visible = false;
-            if (Keyboard.state.get("KeyD") && this.canJump) {
-                this.walkingLarry.visible = true;
-                this.idleLarry.visible = false;
+            this.crouching.visible = false;
+            if (Keyboard.state.get("KeyD") && this.canJump && !this.standingAttack.playing) {
+                this.walking.visible = true;
+                this.idle.visible = false;
                 this.speed.x = Larry.MOVE_SPEED;
                 this.facingRight = true;
                 if (this.facingRight) {
                     this.scale.set(4);
                 }
-            } else {
-                this.walkingLarry.visible = false;
+            } else if (!this.standingAttack.playing) {
+                this.walking.visible = false;
                 if (this.canJump) {
-                    this.idleLarry.visible = true;
-                    this.jumpingLarry.visible = false;
+                    this.idle.visible = true;
+                    this.jumping.visible = false;
                 }
                 this.speed.x = 0;
                 if(this.facingRight) {
@@ -112,9 +136,9 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                     this.scale.set(-4,4);
                 }
             }
-            if (Keyboard.state.get("KeyA") && this.canJump) {
-                this.walkingLarry.visible = true;
-                this.idleLarry.visible = false;
+            if (Keyboard.state.get("KeyA") && this.canJump && !this.standingAttack.playing) {
+                this.walking.visible = true;
+                this.idle.visible = false;
                 this.speed.x = -Larry.MOVE_SPEED;
                 this.facingRight = false;
                 if (!this.facingRight){
@@ -122,19 +146,14 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
                 }
             }
         }
-        if (Keyboard.state.get("KeyW") && this.canJump) {
-            this.idleLarry.visible = false;
-            this.jumpingLarry.visible = true;
-            this.speed.y = -Larry.MOVE_SPEED-100;
-            this.canJump = false;
-        } else if (Keyboard.state.get("KeyD") && !this.canJump && this.y < 900) {
+        if (Keyboard.state.get("KeyD") && !this.canJump && this.y < 900) {
             this.speed.x = Larry.MOVE_SPEED;
             this.scale.set(4);
         } else if (Keyboard.state.get("KeyA") && !this.canJump && this.y < 900) {
             this.speed.x = -Larry.MOVE_SPEED;
             this.scale.set(-4,4);
         } else  if (this.y > 900 || this.speed.y == 0) {
-            this.jumpingLarry.visible = false;
+            this.jumping.visible = false;
             this.canJump = true;
         }
         
@@ -172,6 +191,30 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
        } else {
            return false;
        }
+    }
+
+    private jump() {
+        if (this.canJump && !this.standingAttack.playing) {
+            this.idle.visible = false;
+            this.jumping.visible = true;
+            this.speed.y = -Larry.MOVE_SPEED-100;
+            this.canJump = false;
+        }
+    }
+
+    private attack() {
+        if (!this.standingAttack.playing && this.canJump) {
+            this.speed.x = 0;
+            this.walking.visible = false;
+            this.standingAttack.play();
+            this.idle.visible = false;
+            this.standingAttack.visible = true;
+            setTimeout(() => {
+                this.standingAttack.stop();
+                this.standingAttack.visible = false;
+                this.idle.visible = true;
+            }, 350);
+        }
     }
 
 }

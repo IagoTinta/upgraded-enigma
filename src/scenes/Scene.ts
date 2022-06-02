@@ -17,7 +17,7 @@ export class Scene extends Container implements InterUpdateable{
     private rightWall: Wall;
     private leftWall: Wall;
     private gameOver = false;
-    private background4: TilingSprite;
+    private background: TilingSprite[];
 
     constructor() {
 
@@ -37,26 +37,18 @@ export class Scene extends Container implements InterUpdateable{
         this.addChild(walkingWolfLeft,walkingWolfRight);*/
         
         this.myLevel = new Container();
-        const background1 = new TilingSprite(Texture.from("Background1"),WIDTH*2,HEIGHT*2);
-        const background2 = new TilingSprite(Texture.from("Background2"),WIDTH*2,HEIGHT*2);
-        const background3 = new TilingSprite(Texture.from("Background3"),WIDTH*2,HEIGHT*2);
-        this.background4 = new TilingSprite(Texture.from("Background4"),WIDTH*2,HEIGHT*2);
-        const background5 = new TilingSprite(Texture.from("Background5"),WIDTH*2,HEIGHT*2);
-        const background6 = new TilingSprite(Texture.from("Background6"),WIDTH*2,HEIGHT*2);
-        const background7 = new TilingSprite(Texture.from("Background7"),WIDTH*2,HEIGHT*2);
-        this.myLevel.addChild(background7,
-            background6,
-            background5,
-            this.background4,
-            background3,
-            background2,
-            background1
-        );
+        this.background = [];
+        for (let i=8; i>0; i--) {
+            const archivo = "Background" + i;
+            const backAux = new TilingSprite(Texture.from(archivo),WIDTH*40,HEIGHT*40);
+            this.background.push(backAux);
+            this.myLevel.addChild(backAux);
+        };
 
         this.rightWall = new Wall();
         this.leftWall = new Wall();
         this.rightWall.position.x = 1830;
-        this.leftWall.position.x = -100;
+        this.leftWall.position.x = -80;
         this.myLevel.addChild(this.rightWall, this.leftWall);
 
         this.myLarry = new Larry();
@@ -151,8 +143,12 @@ export class Scene extends Container implements InterUpdateable{
         }
 
         this.myLevel.x -= 0.1 * this.worldTransform.a;
-        this.background4.tilePosition.x = this.myLevel.x;
+        for (let back of this.background) {
+            let cont = this.background.indexOf(back) * 0.2;
+            back.tilePosition.x -= this.worldTransform.a * cont;
+        }
         this.rightWall.position.x += 0.1422725 * this.worldTransform.a;
+        this.leftWall.position.x += 0.1422725 * this.worldTransform.a;
 
         /*if (this.enemies.length < 3) {
             //wait

@@ -39,6 +39,10 @@ export const assets = [
     {url:"./Larry/jumpLarry1.png", name:"jumpLarry1"},
     {url:"./Larry/jumpLarry2.png", name:"jumpLarry2"},
     {url:"./Larry/jumpLarry3.png", name:"jumpLarry3"},
+    {url:"./Larry/verticalSlash1.png", name:"groundAttack1"},
+    {url:"./Larry/verticalSlash2.png", name:"groundAttack2"},
+    {url:"./Larry/verticalSlash3.png", name:"groundAttack3"},
+    {url:"./Larry/verticalSlash4.png", name:"groundAttack4"},
 
     {url:"./Enemies/idlePeon.png", name:"idlePeon"},
     {url:"./Enemies/walkingPeon1.png", name:"walkingPeon1"},
