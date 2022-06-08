@@ -3,6 +3,7 @@ import { Container, Sprite, Texture } from "pixi.js";
 
 export class Button extends Container{
 
+    public static readonly CLICKED_EVENT: string = "buttonClick";
     private def:Texture;
     private down:Texture;
     private over:Texture;

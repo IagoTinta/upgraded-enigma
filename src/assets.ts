@@ -1,31 +1,14 @@
 export const assets = [
     
-    {url:"./WalkingWolf/walk1.png", name:"walkingWolf1"},
-    {url:"./WalkingWolf/walk2.png", name:"walkingWolf2"},
-    {url:"./WalkingWolf/walk3.png", name:"walkingWolf3"},
-    {url:"./WalkingWolf/walk4.png", name:"walkingWolf4"},
-    {url:"./Majora.png", name:"majora"},
-
-    {url:"./ScoreBoardUtils/GlassPanel.png", name:"scoresPanel"},
-    {url:"./ScoreBoardUtils/MetalPanelRed.png", name:"Board"},
-
-    {url:"./ScoreBoardUtils/BlackCircle1.png", name:"BfirstPlace"},
-    {url:"./ScoreBoardUtils/BlackCircle2.png", name:"BsecondPlace"},
-    {url:"./ScoreBoardUtils/BlackCircle3.png", name:"BthirdPlace"},
-    {url:"./ScoreBoardUtils/BlackCross.png", name:"BExit"},
-    {url:"./ScoreBoardUtils/EmptyStar.png", name:"emptyStar"},
-    {url:"./ScoreBoardUtils/BlackMusicOn.png", name:"BmusicOn"},
-    {url:"./ScoreBoardUtils/BlackMusicOff.png", name:"BmusicOff"},
-    {url:"./ScoreBoardUtils/BlackReturn.png", name:"BrePlay"},
-    {url:"./ScoreBoardUtils/Star.png", name:"Star"},
-    {url:"./ScoreBoardUtils/WhiteCross.png", name:"WExit"},
-    {url:"./ScoreBoardUtils/SmallCross.png", name:"SExit"},
-    {url:"./ScoreBoardUtils/WhiteMusicOn.png", name:"WmusicOn"},
-    {url:"./ScoreBoardUtils/WhiteMusicOff.png", name:"WmusicOff"},
-    {url:"./ScoreBoardUtils/WhiteReturn.png", name:"WrePlay"},
-    {url:"./ScoreBoardUtils/SmallMusicOn.png", name:"SmusicOn"},
-    {url:"./ScoreBoardUtils/SmallMusicOff.png", name:"SmusicOff"},
-    {url:"./ScoreBoardUtils/SmallReturn.png", name:"SrePlay"},
+    {url:"./UI/AmatistDream.png", name:"AmatistDream"},
+    {url:"./UI/FrostWoods.png", name:"FrostWoods"},
+    {url:"./UI/MushroomLand.png", name:"MushroomLand"},
+    {url:"./UI/TropicalGrounds.png", name:"TropicalGrounds"},
+    {url:"./UI/Board.png", name:"Board"},
+    {url:"./UI/BoardTittle.png", name:"Tittle"},
+    {url:"./UI/normalButton.png", name:"normal"},
+    {url:"./UI/overButton.png", name:"over"},
+    {url:"./UI/downButton.png", name:"down"},
     
     {url:"./Larry/walkLarry1.png", name:"walkLarry1"},
     {url:"./Larry/walkLarry2.png", name:"walkLarry2"},
@@ -52,6 +35,11 @@ export const assets = [
     {url:"./Enemies/walkingPeon5.png", name:"walkingPeon5"},
     {url:"./Enemies/walkingPeon6.png", name:"walkingPeon6"},
 
+    {url:"./Weapons/verticalSword1.png", name:"verticalSword1"},
+    {url:"./Weapons/verticalSword2.png", name:"verticalSword2"},
+    {url:"./Weapons/verticalSword3.png", name:"verticalSword3"},
+    {url:"./Weapons/verticalSword4.png", name:"verticalSword4"},
+
     {url:"./Frostwoods/FullBackground.png", name:"FullBackground"},
     {url:"./Frostwoods/Background1.png", name:"Background1"},
     {url:"./Frostwoods/Background2.png", name:"Background2"},
@@ -60,4 +48,9 @@ export const assets = [
     {url:"./Frostwoods/Background5.png", name:"Background5"},
     {url:"./Frostwoods/Background6.png", name:"Background6"},
     {url:"./Frostwoods/Background7.png", name:"Background7"},
+
+    {url:"./Sound Effects/MenuCredits.mp3", name:"Credits"},
+    {url:"./Sound Effects/MenuSelect.mp3", name:"Select"},
+    {url:"./Sound Effects/MenuStart.mp3", name:"Start"},
+    {url:"./Music/LevelMusicPrueba.mp3", name:"Prueba"}
 ];

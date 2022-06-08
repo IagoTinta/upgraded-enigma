@@ -1,4 +1,4 @@
-import { AnimatedSprite, Graphics, Rectangle, Sprite, Texture } from "pixi.js";
+import { AnimatedSprite, Graphics, ObservablePoint, Rectangle, Sprite, Texture } from "pixi.js";
 import { PhysicsContainer } from "../PhysicsContainer";
 import { InterHitbox } from "../Utils/InterHitbox";
 import { InterUpdateable } from "../Utils/InterUpdateable";
@@ -10,6 +10,8 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
     private walkingPeon: AnimatedSprite;
     private hitbox: Graphics;
     private level: number;
+    private health = 30;
+    public damageCheck = true;
     private static readonly MOVE_SPEED = 150;
 
     constructor(level: number) {
@@ -46,6 +48,7 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
     }
 
     public override update (deltaMS: number):void {
+        console.log(this.health);
         const dt = deltaMS / (60);
         super.update(dt);
         this.walkingPeon.update(dt / (1/60));
@@ -66,6 +69,23 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
 
     }
 
+    public separate(overlap: Rectangle, objeto: ObservablePoint<any>) {
+        if (overlap.width < overlap.height){
+            if (this.x > objeto.x) {
+                this.x += overlap.width;
+            } else if (this.x < objeto.x){
+                this.x -= overlap.width;
+            }
+        } else {
+            if (this.y < objeto.y) {
+                this.y -= overlap.height;
+            } else if (this.x > objeto.y){
+                this.y += overlap.height;
+            }
+        }
+
+    }
+
     public resumeSpeed(): void {
         this.speed.x = (Enemy.MOVE_SPEED * (Math.random() < 0.5 ? -1 : 1)) + (Math.random()*100 - 50);
     }
@@ -76,6 +96,19 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
 
     public dealDamage():number {
         return this.level*5;
+    }
+
+    public receiveDamage(damage: number) {
+        this.health -= damage;
+    }
+
+    public isDead():boolean {
+       if(this.health <= 0) {
+           this.visible = false;
+           return true;
+       } else {
+           return false;
+       }
     }
 
 }

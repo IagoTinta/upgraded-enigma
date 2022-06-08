@@ -9,13 +9,14 @@ import { checkCollision} from "../Game/Utils/InterHitbox";
 import { InterUpdateable } from "../Game/Utils/InterUpdateable";
 import { Wall } from "../Game/WorldObjects/Wall";
 
-export class Scene extends Container implements InterUpdateable{
+export class FrostWoods extends Container implements InterUpdateable{
 
     private myLevel: Container;
     private myLarry: Larry;
     private enemies: Enemy[];
     private rightWall: Wall;
     private leftWall: Wall;
+    private sowrdHitbox: Wall;
     private gameOver = false;
     private background: TilingSprite[];
 
@@ -23,37 +24,31 @@ export class Scene extends Container implements InterUpdateable{
 
         super();
         
-        /*const completeBoard: Board = new Board();
-        
-        const GameScoreBoard: ScoreAndRating = new ScoreAndRating();
-        this.addChild(completeBoard,GameScoreBoard);
-        
-        const walkingWolfLeft: WalkingWolf = new WalkingWolf();
-        const walkingWolfRight: WalkingWolf = new WalkingWolf();
-        walkingWolfLeft.position.set(780,590);
-        walkingWolfRight.position.set(500,590);
-        walkingWolfRight.scale.set(-1,1);
-        
-        this.addChild(walkingWolfLeft,walkingWolfRight);*/
-        
         this.myLevel = new Container();
         this.background = [];
-        for (let i=8; i>0; i--) {
-            const archivo = "Background" + i;
-            const backAux = new TilingSprite(Texture.from(archivo),WIDTH*40,HEIGHT*40);
+        for (let i=8; i>1; i--) {
+            const archivo = "Background" + (i-1);
+            const backAux = new TilingSprite(Texture.from(archivo),WIDTH*4000,HEIGHT*4000);
             this.background.push(backAux);
             this.myLevel.addChild(backAux);
         };
 
-        this.rightWall = new Wall();
-        this.leftWall = new Wall();
+        this.rightWall = new Wall(100,1200);
+        this.leftWall = new Wall(100,1200);
+        this.sowrdHitbox = new Wall(40,20);
         this.rightWall.position.x = 1830;
         this.leftWall.position.x = -80;
-        this.myLevel.addChild(this.rightWall, this.leftWall);
+        this.myLevel.addChild(this.rightWall, this.leftWall, this.sowrdHitbox);
 
         this.myLarry = new Larry();
         this.myLarry.position.set(960,900);
         this.myLevel.addChild(this.myLarry);
+        this.sowrdHitbox.position.x = this.myLarry.position.x + 60;
+
+        const archivo = "Background" + 1;
+        const backAux = new TilingSprite(Texture.from(archivo),WIDTH*40,HEIGHT*40);
+        this.background.push(backAux);
+        this.myLevel.addChild(backAux);
         
         this.enemies = [];
         const anotherEnemy1 = new Enemy(Math.floor((Math.random()*3)+1));
@@ -73,13 +68,12 @@ export class Scene extends Container implements InterUpdateable{
         const Descripcion: Text = new Text("Plataform Autoscroller With Combat", {fontSize: 40, fill:0xFFFFFF, fontFamily: "Cambria"});
         Titulo.anchor.set(0.5);
         Descripcion.anchor.set(0.5);
-        Titulo.position.set(960,22.5);
-        Descripcion.position.set(960,60);
-        this.myLevel.addChild(Titulo,Descripcion);
+        Titulo.position.set(WIDTH/2,22.5);
+        Descripcion.position.set(WIDTH/2,60);
 
         this.myLevel.scale.x = 0.70;
         this.myLevel.scale.y = 0.68;
-        this.addChild(this.myLevel);
+        this.addChild(this.myLevel,Titulo,Descripcion);
       
     }
 
@@ -88,16 +82,28 @@ export class Scene extends Container implements InterUpdateable{
         if (this.gameOver) {
             return;
         }
-        //console.log(this.myLarry.speed.x);
-        //console.log(this.myLarry.toGlobal(this.myLevel).x);
+
         this.myLarry.update(deltaTime);
 
-        for (let enemy of this.enemies) {
+        if (this.myLarry.speed.x > 0) {
+                this.sowrdHitbox.position.x = this.myLarry.position.x + 60;
+        } else if (this.myLarry.speed.x < 0) {
+            this.sowrdHitbox.position.x = this.myLarry.position.x - 100;
+        }
+        this.sowrdHitbox.position.y = this.myLarry.position.y - 40;
 
+        for (let enemy of this.enemies) {
             enemy.update(deltaTime);
             const overlap = checkCollision(this.myLarry, enemy);
             const rEnemyWall = checkCollision(enemy,this.rightWall);
             const lEnemyWall = checkCollision(enemy,this.leftWall);
+            const hit = checkCollision(enemy,this.sowrdHitbox);
+            if (hit != null && this.myLarry.hitting && enemy.damageCheck) {
+                enemy.receiveDamage(this.myLarry.dealDamage());
+                enemy.damageCheck = false;
+            } else {
+                enemy.damageCheck = true;
+            }
             if (overlap != null && this.myLarry.damageCheck) {
 
                 //this.modelLarry.separate(overlap, this.enemy.position);
@@ -114,13 +120,20 @@ export class Scene extends Container implements InterUpdateable{
             }
 
             if (rEnemyWall != null) {
+                enemy.separate(rEnemyWall, this.rightWall.position);
                 enemy.speed.x = -enemy.speed.x;
             }
             if (lEnemyWall != null) {
+                enemy.separate(lEnemyWall, this.leftWall.position);
                 enemy.speed.x = -enemy.speed.x;
+            }
+            if (enemy.isDead()) {
+                enemy.destroy();
             }
 
         }
+
+        this.enemies = this.enemies.filter((elem) => !elem.destroyed);
 
         const rLarryWall = checkCollision(this.myLarry, this.rightWall);
         const lLarryWall = checkCollision(this.myLarry, this.leftWall);
@@ -147,8 +160,8 @@ export class Scene extends Container implements InterUpdateable{
             let cont = this.background.indexOf(back) * 0.2;
             back.tilePosition.x -= this.worldTransform.a * cont;
         }
-        this.rightWall.position.x += 0.1422725 * this.worldTransform.a;
-        this.leftWall.position.x += 0.1422725 * this.worldTransform.a;
+        this.rightWall.position.x += 0.1425725 * this.worldTransform.a;
+        this.leftWall.position.x += 0.1425725 * this.worldTransform.a;
 
         /*if (this.enemies.length < 3) {
             //wait

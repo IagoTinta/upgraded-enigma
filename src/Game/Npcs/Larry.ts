@@ -23,9 +23,11 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
     //constantes y condiciones
     private static readonly GRAVITY = 200;
     private static readonly MOVE_SPEED = 300;
+    private static readonly ATACK_DAMAGE = 15;
     public canJump = true;
     private facingRight = true;
     public damageCheck = true;
+    public hitting = false;
 
     constructor(){
 
@@ -66,13 +68,13 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
         this.crouching.visible = false;
         this.jumping.anchor.set(0.5);
         this.jumping.visible = false;
-        this.standingAttack.anchor.set(0.5);
+        this.standingAttack.anchor.set(0.5,0.48);
         this.standingAttack.animationSpeed = 0.175;
         this.standingAttack.visible = false;
         
 
         this.hitbox = new Graphics();
-        this.hitbox.beginFill(0x268212, 0.5);
+        this.hitbox.beginFill(0x268212, 0);
         this.hitbox.drawRect(0,0,18,46);
         this.hitbox.endFill();
         this.hitbox.position.set(-9,-23);
@@ -209,12 +211,18 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
             this.standingAttack.play();
             this.idle.visible = false;
             this.standingAttack.visible = true;
+            this.hitting = true;
             setTimeout(() => {
                 this.standingAttack.stop();
                 this.standingAttack.visible = false;
                 this.idle.visible = true;
+                this.hitting = false;
             }, 350);
         }
+    }
+
+    public dealDamage():number {
+        return Larry.ATACK_DAMAGE;
     }
 
 }

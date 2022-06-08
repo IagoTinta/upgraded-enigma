@@ -1,7 +1,8 @@
 import { Application, Loader, Ticker} from 'pixi.js'
 import { assets } from './assets';
-import { Scene } from './scenes/Scene';
+//import { FrostWoods } from './scenes/FrostWoods';
 import { Keyboard } from './Game/Utils/Keyboard';
+import { MainMenu } from './scenes/MainMenu';
 
 export const WIDTH = 1280;
 export const HEIGHT = 720;
@@ -45,7 +46,7 @@ Loader.shared.add(assets);
 
 Loader.shared.onComplete.add(()=>{
 
-	const myScene = new Scene();
+	const myScene = new MainMenu();
 	Ticker.shared.add((deltaFrame)=>{
 		myScene.update(deltaFrame,Ticker.shared.deltaMS);
 	})
