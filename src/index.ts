@@ -1,6 +1,5 @@
 import { Application, Loader, Ticker} from 'pixi.js'
 import { assets } from './assets';
-//import { FrostWoods } from './scenes/FrostWoods';
 import { Keyboard } from './Game/Utils/Keyboard';
 import { MainMenu } from './scenes/MainMenu';
 
@@ -44,9 +43,11 @@ window.dispatchEvent(new Event("resize"));
 
 Loader.shared.add(assets);
 
+let myScene: any;
+
 Loader.shared.onComplete.add(()=>{
 
-	const myScene = new MainMenu();
+	myScene = new MainMenu();
 	Ticker.shared.add((deltaFrame)=>{
 		myScene.update(deltaFrame,Ticker.shared.deltaMS);
 	})
@@ -55,3 +56,9 @@ Loader.shared.onComplete.add(()=>{
 });
 
 Loader.shared.load();
+
+export function changeScene(newScene: any) {
+	app.stage.removeChild(myScene);
+	myScene = newScene;
+	app.stage.addChild(myScene);
+}

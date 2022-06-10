@@ -4,6 +4,7 @@ export const assets = [
     {url:"./UI/FrostWoods.png", name:"FrostWoods"},
     {url:"./UI/MushroomLand.png", name:"MushroomLand"},
     {url:"./UI/TropicalGrounds.png", name:"TropicalGrounds"},
+    {url:"./UI/WorldOnFire.png", name:"GameOverBack"},
     {url:"./UI/Board.png", name:"Board"},
     {url:"./UI/BoardTittle.png", name:"Tittle"},
     {url:"./UI/normalButton.png", name:"normal"},
@@ -52,5 +53,7 @@ export const assets = [
     {url:"./Sound Effects/MenuCredits.mp3", name:"Credits"},
     {url:"./Sound Effects/MenuSelect.mp3", name:"Select"},
     {url:"./Sound Effects/MenuStart.mp3", name:"Start"},
-    {url:"./Music/LevelMusicPrueba.mp3", name:"Prueba"}
+    {url:"./Music/LevelMusicPrueba.mp3", name:"Prueba"},
+    {url:"./Music/GameOverMusic.mp3", name:"GameOver"},
+    {url:"./Music/FrostWoodsMusic.mp3", name:"FWMusic"},
 ];

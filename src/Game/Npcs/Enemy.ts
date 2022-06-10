@@ -48,7 +48,6 @@ export class Enemy extends PhysicsContainer implements InterUpdateable, InterHit
     }
 
     public override update (deltaMS: number):void {
-        console.log(this.health);
         const dt = deltaMS / (60);
         super.update(dt);
         this.walkingPeon.update(dt / (1/60));

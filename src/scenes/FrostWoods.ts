@@ -1,5 +1,6 @@
+import { sound, Sound } from "@pixi/sound";
 import { Container, Text, Texture, TilingSprite} from "pixi.js";
-import { HEIGHT, WIDTH } from "..";
+import { changeScene, HEIGHT, WIDTH } from "..";
 import { Enemy } from "../Game/Npcs/Enemy";
 //import { Board } from "../Game/Board";
 //import { ScoreAndRating } from "../Game/ScoreAndRating";
@@ -8,6 +9,7 @@ import { Larry } from "../Game/Npcs/Larry";
 import { checkCollision} from "../Game/Utils/InterHitbox";
 import { InterUpdateable } from "../Game/Utils/InterUpdateable";
 import { Wall } from "../Game/WorldObjects/Wall";
+import { GameOver } from "./GameOver";
 
 export class FrostWoods extends Container implements InterUpdateable{
 
@@ -19,6 +21,7 @@ export class FrostWoods extends Container implements InterUpdateable{
     private sowrdHitbox: Wall;
     private gameOver = false;
     private background: TilingSprite[];
+    private music: Sound;
 
     constructor() {
 
@@ -52,20 +55,20 @@ export class FrostWoods extends Container implements InterUpdateable{
         
         this.enemies = [];
         const anotherEnemy1 = new Enemy(Math.floor((Math.random()*3)+1));
-        anotherEnemy1.position.set(900,925);
+        anotherEnemy1.position.set(1100,925);
         this.enemies.push(anotherEnemy1);
         this.myLevel.addChild(anotherEnemy1);
         const anotherEnemy2 = new Enemy(Math.floor((Math.random()*3)+1));
-        anotherEnemy2.position.set(900,925);
+        anotherEnemy2.position.set(1100,925);
         this.enemies.push(anotherEnemy2);
         this.myLevel.addChild(anotherEnemy2);
         const anotherEnemy3 = new Enemy(Math.floor((Math.random()*3)+1));
-        anotherEnemy3.position.set(900,925);
+        anotherEnemy3.position.set(1100,925);
         this.enemies.push(anotherEnemy3);
         this.myLevel.addChild(anotherEnemy3);
 
-        const Titulo: Text = new Text("Larry's Adventure Day", {fontSize: 40, fill:0xFFFFFF, fontFamily: "Cambria"});
-        const Descripcion: Text = new Text("Plataform Autoscroller With Combat", {fontSize: 40, fill:0xFFFFFF, fontFamily: "Cambria"});
+        const Titulo: Text = new Text("Larry's Adventure Day", {fontSize: 40, fill:0x000000, fontFamily: "Cambria"});
+        const Descripcion: Text = new Text("Plataform Autoscroller With Combat", {fontSize: 40, fill:0x000000, fontFamily: "Cambria"});
         Titulo.anchor.set(0.5);
         Descripcion.anchor.set(0.5);
         Titulo.position.set(WIDTH/2,22.5);
@@ -74,12 +77,19 @@ export class FrostWoods extends Container implements InterUpdateable{
         this.myLevel.scale.x = 0.70;
         this.myLevel.scale.y = 0.68;
         this.addChild(this.myLevel,Titulo,Descripcion);
+
+        this.music = sound.find("FWMusic");
+        this.music.play({volume:0.2,singleInstance:true,loop:true});
+        this.music.muted = false;
       
     }
 
     public update (deltaTime: number, _deltaFrame: number):void {
 
         if (this.gameOver) {
+            this.music.muted = true;
+            const auxScene = new GameOver();
+            changeScene(auxScene);
             return;
         }
 
@@ -94,28 +104,24 @@ export class FrostWoods extends Container implements InterUpdateable{
 
         for (let enemy of this.enemies) {
             enemy.update(deltaTime);
-            const overlap = checkCollision(this.myLarry, enemy);
+            const encounter = checkCollision(this.myLarry, enemy);
             const rEnemyWall = checkCollision(enemy,this.rightWall);
             const lEnemyWall = checkCollision(enemy,this.leftWall);
             const hit = checkCollision(enemy,this.sowrdHitbox);
             if (hit != null && this.myLarry.hitting && enemy.damageCheck) {
-                enemy.receiveDamage(this.myLarry.dealDamage());
                 enemy.damageCheck = false;
+                enemy.receiveDamage(this.myLarry.dealDamage());
             } else {
                 enemy.damageCheck = true;
             }
-            if (overlap != null && this.myLarry.damageCheck) {
-
-                //this.modelLarry.separate(overlap, this.enemy.position);
-                //this.modelLarry.receiveDamage(enemy.dealDamage());
+            if (encounter != null && this.myLarry.damageCheck) {
+                this.myLarry.receiveDamage(enemy.dealDamage());
                 this.myLarry.damageCheck = false;
                 enemy.speed.x = 0;
-
-            } else if (overlap != null) {
+            } else if (encounter != null) {
                 this.myLarry.damageCheck = false;
             } else  if (enemy.speed.x == 0) {
                 enemy.resumeSpeed();
-            } else {
                 this.myLarry.damageCheck = true;
             }
 

@@ -18,12 +18,12 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
     private hitbox:Graphics;
 
     //stats
-    private health = 100;
+    private health = 5;
 
     //constantes y condiciones
     private static readonly GRAVITY = 200;
     private static readonly MOVE_SPEED = 300;
-    private static readonly ATACK_DAMAGE = 15;
+    private static readonly ATTACK_DAMAGE = 15;
     public canJump = true;
     private facingRight = true;
     public damageCheck = true;
@@ -222,7 +222,7 @@ export class Larry extends PhysicsContainer implements InterUpdateable,InterHitb
     }
 
     public dealDamage():number {
-        return Larry.ATACK_DAMAGE;
+        return Larry.ATTACK_DAMAGE;
     }
 
 }
