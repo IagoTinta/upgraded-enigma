@@ -1,10 +1,10 @@
 import { Container } from "@pixi/display";
 import { Sound, sound } from "@pixi/sound";
 import { NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
-import { changeScene, HEIGHT, WIDTH } from "..";
+import { changeScene, HEIGHT, TEXT_STYLE, WIDTH } from "..";
 import { Button } from "../Game/Utils/Button";
 import { InterUpdateable } from "../Game/Utils/InterUpdateable";
-import { FrostWoods } from "./FrostWoods";
+import { Level } from "./Level";
 
 
 export class MainMenu extends Container implements InterUpdateable {
@@ -36,7 +36,7 @@ export class MainMenu extends Container implements InterUpdateable {
 
         const menuBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
         const menuBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
-        const menuTittle: Text = new Text("Larry's Adventure Day", {fontSize: 60,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const menuTittle: Text = new Text("Larry's Adventure Day", TEXT_STYLE);
         this.menuScreen.addChild(menuBoard,menuBoardtittle,menuTittle);
         menuBoardtittle.position.set(166,-50);
         menuTittle.anchor.set(0.5);
@@ -57,39 +57,58 @@ export class MainMenu extends Container implements InterUpdateable {
 
         const start = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         start.position.set(272.5,250);
-        const startText: Text = new Text("Let's Go!", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const startText: Text = new Text("¡Let's Go!", TEXT_STYLE);
         startText.anchor.set(0.5);
         startText.position.copyFrom(start.position);
         start.on(Button.CLICKED_EVENT, this.startGame, this);
         this.menuScreen.addChild(start,startText);
         const muteMusic = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         muteMusic.position.set(272.5,500);
-        const muteText: Text = new Text("Mute Music", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const muteText: Text = new Text("Mute Music", TEXT_STYLE);
         muteText.anchor.set(0.5);
         muteText.position.copyFrom(muteMusic.position);
         muteMusic.on(Button.CLICKED_EVENT, this.muteMusic, this);
         this.menuScreen.addChild(muteMusic,muteText);
         const muteSFX = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         muteSFX.position.set(772.5,500);
-        const mSFXText: Text = new Text("Mute SFX", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const mSFXText: Text = new Text("Mute SFX", TEXT_STYLE);
         mSFXText.anchor.set(0.5);
         mSFXText.position.copyFrom(muteSFX.position);
         muteSFX.on(Button.CLICKED_EVENT, this.muteSFX, this);
         this.menuScreen.addChild(muteSFX,mSFXText);
         const credits = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         credits.position.set(772.5,250);
-        const creditsText: Text = new Text("Credits", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const creditsText: Text = new Text("Credits", TEXT_STYLE);
         creditsText.anchor.set(0.5);
         creditsText.position.copyFrom(credits.position);
         credits.on(Button.CLICKED_EVENT, this.changeScreen, this);
         this.menuScreen.addChild(credits,creditsText);
 
         this.creditsScreen = new Container();
-        const credtisBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
+        const creditsBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
         const creditsBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
-        const creditsTittle: Text = new Text("Credits", {fontSize: 60,align:'center', fill:0x000000, fontFamily: "Cambria"});
-        this.creditsScreen.addChild(credtisBoard,creditsBoardtittle,creditsTittle);
+        const creditsTextWindow = new NineSlicePlane(Texture.from("textWindow"),35,35,35,35);
+        const creditsTittle: Text = new Text("Credits\nMade by Tragedy Boy", TEXT_STYLE);
+        const creditsLore: Text = new Text(
+            "Welcome to Evernite! Where honor and bravery are everywhere, \n" +
+            "and knighthood is the way to go. In a world where hard work is \n" +
+            " the only way to achieve greatness, why would Larry waste \n" +
+            " his time trying to be someone when there's awesome knights \n" +
+            " everywhere?. But one day, the Dark Lord Zaan \n" + 
+            "returned, and, strongest than ever, he wiped \n" + 
+            "out all the knights... All, except for one. Now, \n" +
+            "Larry has the difficult task to save the world and \n" + 
+            "destroy The Dark Lord once and for all. \n" + 
+            "Will he succeed? Only you can help him!", 
+            TEXT_STYLE);
+        this.creditsScreen.addChild(creditsBoard,creditsTextWindow,creditsLore,creditsBoardtittle,creditsTittle);
         creditsBoardtittle.position.set(166,-50);
+        creditsTextWindow.pivot.set(260,195.5);
+        creditsTextWindow.position.set(creditsBoard.width/2,creditsBoard.height/2);
+        creditsTextWindow.scale.set(1.685,1.1);
+        creditsLore.scale.set(0.6,0.75);
+        creditsLore.anchor.set(0.5);
+        creditsLore.position.copyFrom(creditsTextWindow);
         creditsTittle.anchor.set(0.5);
         creditsTittle.position.set(522.5,15);
         this.creditsScreen.scale.set(0.75);
@@ -98,7 +117,7 @@ export class MainMenu extends Container implements InterUpdateable {
 
         const creditsReturn = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         creditsReturn.position.set(522.5,675);
-        const creditsReturnText: Text = new Text("Return", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const creditsReturnText: Text = new Text("Return", TEXT_STYLE);
         creditsReturnText.anchor.set(0.5);
         creditsReturnText.position.copyFrom(creditsReturn);
         creditsReturn.on(Button.CLICKED_EVENT, this.changeScreen, this);
@@ -116,7 +135,7 @@ export class MainMenu extends Container implements InterUpdateable {
         const auxSound = this.SFX.get("Start");
         auxSound?.play({volume: 0.2, singleInstance: true,speed:1.1});
         this.mainMenuMusic.muted = true;
-        const newScene = new FrostWoods();
+        const newScene = new Level();
         changeScene(newScene)
     }
     public changeScreen() {
@@ -134,14 +153,14 @@ export class MainMenu extends Container implements InterUpdateable {
             this.onCredits = false;
         }
     }
-    public muteMusic() {
+    private muteMusic() {
         if (!this.mainMenuMusic.muted) {
             this.mainMenuMusic.muted = true;
         } else {
             this.mainMenuMusic.muted = false;
         }
     }
-    public muteSFX() {
+    private muteSFX() {
         if (!this.SFX.get("Start")?.muted) {
             this.SFX.forEach((key)=> key.muted = true);
         } else {

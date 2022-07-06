@@ -10,7 +10,7 @@ export class Wall extends Container implements InterHitbox {
 
         super();
         this.hitbox = new Graphics();
-        this.hitbox.beginFill(0xDFFF3D,1);
+        this.hitbox.beginFill(0xDFFF3D,0);
         this.hitbox.drawRect(0,0,w,h);
         this.hitbox.endFill();
 

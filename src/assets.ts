@@ -10,45 +10,7 @@ export const assets = [
     {url:"./UI/normalButton.png", name:"normal"},
     {url:"./UI/overButton.png", name:"over"},
     {url:"./UI/downButton.png", name:"down"},
-    
-    {url:"./Larry/walkLarry1.png", name:"walkLarry1"},
-    {url:"./Larry/walkLarry2.png", name:"walkLarry2"},
-    {url:"./Larry/walkLarry3.png", name:"walkLarry3"},
-    {url:"./Larry/walkLarry4.png", name:"walkLarry4"},
-    {url:"./Larry/walkLarry5.png", name:"walkLarry5"},
-    {url:"./Larry/walkLarry6.png", name:"walkLarry6"},
-    {url:"./Larry/idleLarry.png", name:"idleLarry"},
-    {url:"./Larry/crouchLarry3.png", name:"crouchLarry3"},
-    {url:"./Larry/crouchLarryReversed.png", name:"crouchLarryReversed"},
-    {url:"./Larry/jumpLarry1.png", name:"jumpLarry1"},
-    {url:"./Larry/jumpLarry2.png", name:"jumpLarry2"},
-    {url:"./Larry/jumpLarry3.png", name:"jumpLarry3"},
-    {url:"./Larry/verticalSlash1.png", name:"groundAttack1"},
-    {url:"./Larry/verticalSlash2.png", name:"groundAttack2"},
-    {url:"./Larry/verticalSlash3.png", name:"groundAttack3"},
-    {url:"./Larry/verticalSlash4.png", name:"groundAttack4"},
-
-    {url:"./Enemies/idlePeon.png", name:"idlePeon"},
-    {url:"./Enemies/walkingPeon1.png", name:"walkingPeon1"},
-    {url:"./Enemies/walkingPeon2.png", name:"walkingPeon2"},
-    {url:"./Enemies/walkingPeon3.png", name:"walkingPeon3"},
-    {url:"./Enemies/walkingPeon4.png", name:"walkingPeon4"},
-    {url:"./Enemies/walkingPeon5.png", name:"walkingPeon5"},
-    {url:"./Enemies/walkingPeon6.png", name:"walkingPeon6"},
-
-    {url:"./Weapons/verticalSword1.png", name:"verticalSword1"},
-    {url:"./Weapons/verticalSword2.png", name:"verticalSword2"},
-    {url:"./Weapons/verticalSword3.png", name:"verticalSword3"},
-    {url:"./Weapons/verticalSword4.png", name:"verticalSword4"},
-
-    {url:"./Frostwoods/FullBackground.png", name:"FullBackground"},
-    {url:"./Frostwoods/Background1.png", name:"Background1"},
-    {url:"./Frostwoods/Background2.png", name:"Background2"},
-    {url:"./Frostwoods/Background3.png", name:"Background3"},
-    {url:"./Frostwoods/Background4.png", name:"Background4"},
-    {url:"./Frostwoods/Background5.png", name:"Background5"},
-    {url:"./Frostwoods/Background6.png", name:"Background6"},
-    {url:"./Frostwoods/Background7.png", name:"Background7"},
+    {url:"./UI/textWindow.png", name:"textWindow"},
 
     {url:"./Sound Effects/MenuCredits.mp3", name:"Credits"},
     {url:"./Sound Effects/MenuSelect.mp3", name:"Select"},
@@ -56,4 +18,16 @@ export const assets = [
     {url:"./Music/LevelMusicPrueba.mp3", name:"Prueba"},
     {url:"./Music/GameOverMusic.mp3", name:"GameOver"},
     {url:"./Music/FrostWoodsMusic.mp3", name:"FWMusic"},
+
+    {url:"./TextStyles/PixelStyle.ttf", name: "PixelFont"},
+
+    {url:"/Space Shooter/Backgrounds/levelBackground.png", name: "background"},
+    {url:"/Space Shooter/Spaceships/Spaceship3.json", name: "Spaceship3"},
+    {url:"/Space Shooter/Spaceships/SsNFlight.json", name: "SsNFlight"},
+    {url:"/Space Shooter/Spaceships/SsShots.json", name: "SsShots"},
+    {url:"/Space Shooter/Objects/Objects1.json", name: "Objects1"},
+    {url:"/Space Shooter/Objects/Objects2.json", name: "Objects2"},
+
+    {url:"/Space Shooter/EnemyShips/Boss1.png", name: "Boss1"},
+    
 ];

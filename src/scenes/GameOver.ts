@@ -1,6 +1,6 @@
 import { Sound, sound } from "@pixi/sound";
 import { Container, NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
-import { changeScene, HEIGHT, WIDTH } from "..";
+import { changeScene, HEIGHT, TEXT_STYLE, WIDTH } from "..";
 import { Button } from "../Game/Utils/Button";
 import { InterUpdateable } from "../Game/Utils/InterUpdateable";
 import { MainMenu } from "./MainMenu";
@@ -22,7 +22,7 @@ export class GameOver extends Container implements InterUpdateable{
         this.gameoverScreen = new Container();
 
         const menuBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
-        const menuTittle: Text = new Text("Larry is Dead, how tragic...", {fontSize: 60,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const menuTittle: Text = new Text("Larry is Dead, how tragic...", TEXT_STYLE);
         this.gameoverScreen.addChild(menuBoard,menuTittle);;
         menuTittle.anchor.set(0.5);
         menuTittle.position.set(menuBoard.width/2,menuBoard.height/2);
@@ -31,7 +31,7 @@ export class GameOver extends Container implements InterUpdateable{
         this.gameoverScreen.position.set(WIDTH/2,HEIGHT/2);
         const back = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         back.position.set(522.5,675);
-        const backText: Text = new Text("Back to \n Main Menu", {fontSize: 55,align:'center', fill:0x000000, fontFamily: "Cambria"});
+        const backText: Text = new Text("Back to \n Main Menu", TEXT_STYLE);
         backText.anchor.set(0.5);
         backText.position.copyFrom(back);
         back.on(Button.CLICKED_EVENT, this.back2Menu, this);
