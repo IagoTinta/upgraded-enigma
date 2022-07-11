@@ -1,17 +1,18 @@
 import { Container, Texture, TilingSprite } from "pixi.js";
 import { Tween } from "tweedle.js";
-import { HEIGHT, WIDTH } from "..";
 import { EnemyShip } from "../Game/Npcs/EnemyShip";
 import { Spaceship } from "../Game/Npcs/Spaceship";
+import { BaseScene } from "../Game/Utils/BaseScene";
 import { checkCollision } from "../Game/Utils/InterHitbox";
-import { InterUpdateable } from "../Game/Utils/InterUpdateable";
 import { Keyboard } from "../Game/Utils/Keyboard";
+import { Manager } from "../Game/Utils/Manager";
 import { StateAnimations } from "../Game/Utils/StateAnimations";
 import { PowerUp } from "../Game/WorldObjects/PowerUp";
 import { Wall } from "../Game/WorldObjects/Wall";
+import { GlowFilter } from "@pixi/filter-glow";
 
 
-export class Level extends Container implements InterUpdateable {
+export class Level extends BaseScene {
 
     private world: Container;
     private background: TilingSprite;
@@ -20,42 +21,53 @@ export class Level extends Container implements InterUpdateable {
     private powerup: PowerUp;
     private walls: Wall[];
     private proyectiles: Map<StateAnimations,Wall> = new Map();
+    private enemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private PUactive: boolean = false;
+    private laserGlow: GlowFilter;
 
     constructor() {
 
         super();
         this.world = new Container;
-        this.background = new TilingSprite(Texture.from("background"), WIDTH, HEIGHT);
+        this.background = new TilingSprite(Texture.from("background"), Manager.WIDTH, Manager.HEIGHT);
         this.mySpaceship = new Spaceship();
-        this.mySpaceship.position.set(WIDTH/4,HEIGHT/2);
+        this.mySpaceship.position.set(Manager.WIDTH/4,Manager.HEIGHT/2);
 
         this.enemy = new EnemyShip();
-        this.enemy.position.set(WIDTH * (3/4), HEIGHT/2);
 
         this.walls = [];
-        const leftWall = new Wall(20,HEIGHT);
-        const rightWall = new Wall(20,HEIGHT);
-        rightWall.position.x = WIDTH-20;
-        const topWall = new Wall(WIDTH,10);
-        const bottomWall = new Wall(WIDTH,10);
-        bottomWall.position.y = HEIGHT-10;
+        const leftWall = new Wall(20,Manager.HEIGHT);
+        const rightWall = new Wall(20,Manager.HEIGHT);
+        rightWall.position.x = Manager.WIDTH-20;
+        const topWall = new Wall(Manager.WIDTH,10);
+        const bottomWall = new Wall(Manager.WIDTH,10);
+        bottomWall.position.y = Manager.HEIGHT-10;
         this.walls.push(leftWall, rightWall, topWall, bottomWall);
 
         this.powerup = new PowerUp();
+        this.laserGlow = new GlowFilter({color: 0xFF0000});
 
-        this.world.addChild(this.mySpaceship, this.enemy);
         this.addChild(
             this.background, 
             this.world,
+            this.mySpaceship,
+            this.enemy,
             leftWall,
             rightWall,
             topWall,
             bottomWall
         );
 
-        Keyboard.down.on("Space", this.shootFrom, this);
+        this.spawnEnemy();
 
+
+        Keyboard.down.on("Space", this.shoot, this);
+
+    }
+
+    public override destroy(options:any) {
+        super.destroy(options);
+        Keyboard.down.off("Space", this.shoot);
     }
 
     public update (deltaTime: number, _deltaFrame: number):void {
@@ -71,10 +83,6 @@ export class Level extends Container implements InterUpdateable {
                 this.mySpaceship.separate(limit,wall.position);
                 this.mySpaceship.speed.set(0,0);
             }
-            const enemyLimit = checkCollision(this.enemy, wall);
-            if (enemyLimit != null) {
-                this.enemy.changeSpeed();
-            }
         }
         for (let proy of this.proyectiles.keys()) {
             proy.updateAnim(deltaTime);
@@ -84,38 +92,63 @@ export class Level extends Container implements InterUpdateable {
                 hx.position.copyFrom(proy);
                 const hitEnemy = checkCollision(hx,this.enemy);
                 if (hitEnemy != null) {
-                    proy.playState("hit");
+                    proy.playState("landed");
                     proy.x -= 30;
                     this.enemy.receiveDamage(this.mySpaceship.dealDamage());
                     new Tween({dc:0}).
                     to({dc:1},1).
-                    onComplete(()=>{this.destProy(proy,hx)}).
+                    onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
                     start();
                 }
                 const hitPU = checkCollision(hx,this.powerup);
                 if (hitPU != null && !this.powerup.pickeable) {
-                    proy.playState("hit");
+                    proy.playState("landed");
                     proy.x -= 30;
                     this.powerup.explode();
                     new Tween({dc:0}).
                     to({dc:1},1).
-                    onComplete(()=>{this.destProy(proy,hx)}).
+                    onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
                     start();
                 }
             }
-            if (proy.x > WIDTH+(-this.world.x)) {
-                this.destProy(proy,hx);
+            if (proy.x > Manager.WIDTH+(-this.world.x)) {
+                this.destProy(this.proyectiles,proy,hx);
             }
         }
-        if (this.enemy.isDead()) {
+        for (let eproy of this.enemyProyectiles.keys()) {
+            eproy.updateAnim(deltaTime);
+            const ehx = this.enemyProyectiles.get(eproy);
+            eproy.x -= 5;
+            if (ehx) {
+                ehx.position.copyFrom(eproy);
+                const hit = checkCollision(ehx,this.mySpaceship);
+                if (hit != null) {
+                    eproy.playState("landed");
+                    eproy.x += 5;
+                    this.mySpaceship.explode();
+                    new Tween({dc:0}).
+                    to({dc:1},1).
+                    onComplete(()=>{this.destProy(this.enemyProyectiles,eproy,ehx)}).
+                    start();
+                }
+            }
+            if (eproy.x < -100) {
+                this.destProy(this.enemyProyectiles,eproy,ehx);
+            }
+        }
+
+        if (this.enemy.enemyDead) {
+            this.removeChild(this.enemy);
             new Tween({dc:0}).
-            to({dc:1},350).
-            onStart(()=>{this.enemy.explode()}).
-            onComplete(()=>{this.world.removeChild(this.enemy)}).
+            to({dc:1}, 2000).
+            onComplete(()=>{this.spawnEnemy()}).
             start();
         } else {
             this.enemy.update(deltaTime);
-            this.enemy.x += 0.1 * this.worldTransform.a;
+            this.enemyShoot()
+            if (this.enemy.position.x < -200 || this.enemy.position.y > Manager.HEIGHT+600 || this.enemy.position.y < -600) {
+                this.spawnEnemy();
+            }
         }
 
         if (!this.PUactive) {
@@ -123,7 +156,7 @@ export class Level extends Container implements InterUpdateable {
             const timer = new Tween({dc:1}).
             to({dc:1}, 90000).
             onStart(()=>{
-                this.powerup.position.set(WIDTH+100,Math.random()*500+100);
+                this.powerup.position.set(Manager.WIDTH+100,Math.random()*500+100);
                 this.powerup.respawn();
                 this.addChild(this.powerup);
             }).
@@ -144,32 +177,83 @@ export class Level extends Container implements InterUpdateable {
 
     }
 
-    public shootFrom() {
+    public spawnEnemy() {
+        this.enemy.respawn();
+        this.enemy.position.set(Manager.WIDTH+100, Math.random()*(Manager.HEIGHT+600)-300);
+        if (this.enemy.position.y < Manager.HEIGHT/4) {
+            this.enemy.speed.y = 50;
+        }
+        if (this.enemy.position.y > (Manager.HEIGHT * (3/4))) {
+            this.enemy.speed.y = -50;
+        }
+    }
+
+    public shoot() {
         if (!this.mySpaceship.isShooting() && !this.mySpaceship.isDead()) {
             this.mySpaceship.shoot();
             const proyectile = new StateAnimations();
             proyectile.addState("shoted",["proyectile3.png"], 0.5);
+            proyectile.addState("landed", [
+                "shot3_exp1.png",
+                "shot3_exp2.png",
+                "shot3_exp3.png",
+                "shot3_exp4.png"
+            ], 0.5, false);
             proyectile.playState("shoted");
-            proyectile.position.set(this.mySpaceship.x+60, this.mySpaceship.y+5);
+            proyectile.position.set(this.mySpaceship.x+40, this.mySpaceship.y+5);
+            proyectile.filters = [this.laserGlow]
             const proyHx = new Wall(15,15);
             proyHx.position.copyFrom(proyectile);
-            this.world.addChild(proyectile,proyHx);
+            this.addChild(proyectile,proyHx);
             this.proyectiles.set(proyectile,proyHx);
         }
     }
 
-    private destProy(proyectile: StateAnimations, hitbox: Wall | undefined) {
-        this.proyectiles.delete(proyectile);
-        proyectile.destroy();
+    private enemyShoot() {
+        if (!this.enemy.shooting) {
+            this.enemy.shooting = true;
+            const proyectile = new StateAnimations();
+            proyectile.addState("shoted",["proyectile3.png"], 0.5);
+            proyectile.addState("landed", [
+                "shot3_exp1.png",
+                "shot3_exp2.png",
+                "shot3_exp3.png",
+                "shot3_exp4.png"
+            ], 0.5, false);
+            proyectile.playState("shoted");
+            proyectile.position.set(this.enemy.x-100, this.enemy.y);
+            proyectile.filters = [this.laserGlow]
+            const proyHx = new Wall(15,15);
+            proyHx.position.copyFrom(proyectile);
+            this.addChild(proyectile,proyHx);
+            this.enemyProyectiles.set(proyectile,proyHx);
+            new Tween({dc:0}).
+            to({dc:1}, 1000).
+            onComplete(()=>{this.enemy.shooting = false}).
+            start();
+        }
+    }
+
+    private destProy(where: Map<StateAnimations, Wall>, proyectile: StateAnimations, hitbox: Wall | undefined) {
+        where.delete(proyectile);
         if (hitbox) {
             hitbox.destroy();
         }
+        proyectile.destroy();
+        
     }
+
+    
 
 }
 
 /*
-this.pauseMenu = new Container();
+
+this.music = sound.find("algo");
+        this.music.play({volume:0.2,singleInstance:true,loop:true});
+        this.music.muted = false;
+
+        this.pauseMenu = new Container();
 
         const pauseBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
         const pauseBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
@@ -203,10 +287,8 @@ this.pauseMenu = new Container();
         this.pauseMenu.addChild(resume,resumeText,muteMusic,muteMusicText,back2Menu,b2mText);
     
         Keyboard.down.on("Escape",this.showMenu,this);
-      
-    }
 
-    showMenu() {
+showMenu() {
         if (!this.onMenu) {
             this.onMenu = true;
             this.addChild(this.pauseMenu);
@@ -220,7 +302,8 @@ this.pauseMenu = new Container();
             .start();
         }
     }
-    private muteMusic() {
+
+   private muteMusic() {
         if (!this.music.muted) {
             this.music.muted = true;
         } else {
@@ -231,5 +314,5 @@ this.pauseMenu = new Container();
         this.music.muted = true;
         const newscene = new MainMenu();
         changeScene(newscene);
-    }
+    } 
 */

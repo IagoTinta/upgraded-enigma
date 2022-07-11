@@ -7,6 +7,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
+    "@pixi/filter-glow": "^4.1.5",
+    "@pixi/particle-emitter": "^5.0.7",
     "@pixi/sound": "^4.2.0",
     "pixi-webfont-loader": "^1.0.2",
     "pixi.js": "^6.2.2",

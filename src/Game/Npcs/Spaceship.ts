@@ -1,3 +1,4 @@
+import { GlowFilter } from "@pixi/filter-glow";
 import { Container, Graphics, ObservablePoint, Rectangle, Texture } from "pixi.js";
 import { Tween } from "tweedle.js";
 import { PhysicsContainer } from "../PhysicsContainer";
@@ -13,7 +14,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     private turboAnimations: StateAnimations;
     private cannonAnimations: StateAnimations;
     private wholeShip: Container;
-    private dead = false;
+    private deadSs = false;
     private hitbox: Graphics;
     private shooting = false;
     private damage = 10;
@@ -51,7 +52,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
         this.hitbox = new Graphics();
         this.hitbox.beginFill(0x268212, 0);
-        this.hitbox.drawRect(-30,-12.5,60,25);
+        this.hitbox.drawRect(-25,-10,50,20);
         this.hitbox.endFill();
 
         this.turboAnimations = new StateAnimations();
@@ -65,6 +66,8 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
         this.turboAnimations.position.set(this.SsAnimations.x-50,this.SsAnimations.y);
         this.cannonAnimations.position.set(this.SsAnimations.x+75, this.SsAnimations.y+5);
+
+        this.cannonAnimations.filters = [new GlowFilter({color: 0xFF0000})];
 
         this.wholeShip.addChild(this.SsAnimations,this.turboAnimations);
         this.addChild(this.wholeShip, this.hitbox);
@@ -84,7 +87,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         super.update(dt);
         this.SsAnimations.updateAnim(dt);
         this.turboAnimations.updateAnim(dt);
-        if (!this.dead) {
+        if (!this.deadSs) {
             if (Keyboard.state.get("ArrowRight")) {
                 this.speed.x = Spaceship.SS_SPEED;
             } else {
@@ -106,10 +109,10 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
     }
 
-    private explode() {
-        this.wholeShip.removeChild(this.cannonAnimations);
+    public explode() {
+        this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
         this.SsAnimations.playState("explode");
-        this.dead = true;
+        this.deadSs = true;
         new Tween({dc:0}).to({dc:1},400).onComplete(()=>{
             this.removeChild(this.wholeShip);
         }).start();
@@ -159,7 +162,6 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     }
 
     public isDead() {
-        return this.dead;
+        return this.deadSs;
     }
-
 }
