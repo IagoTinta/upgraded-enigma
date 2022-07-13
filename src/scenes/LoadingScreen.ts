@@ -3,7 +3,7 @@ import { Container, Graphics, Loader } from "pixi.js";
 import { assets } from "../assets";
 import { BaseScene } from "../Game/Utils/BaseScene";
 import { Manager } from "../Game/Utils/Manager";
-import { Level } from "./Level";
+import { MainMenu } from "./MainMenu";
 
 
 export class LoadingScreen extends BaseScene {
@@ -62,7 +62,7 @@ export class LoadingScreen extends BaseScene {
 
     private loadFinish() {
 
-        Manager.changeScene(new Level());
+        Manager.changeScene(new MainMenu());
 
     }
     

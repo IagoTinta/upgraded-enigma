@@ -15,11 +15,14 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     private cannonAnimations: StateAnimations;
     private wholeShip: Container;
     private deadSs = false;
-    private hitbox: Graphics;
-    private shooting = false;
-    private damage = 10;
+    private Sshitbox: Graphics;
+    private shootingSs = false;
+    private damageSs = 10;
+    private turboSs = false;
+    private damageUpSs = false;
+    private shieldSs = false;
     
-    private static readonly SS_SPEED = 250;
+    private static readonly SS_SPEED = 200;
 
     constructor() {
 
@@ -50,10 +53,10 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         ], 0.25, false);
         this.SsAnimations.playState("idle");
 
-        this.hitbox = new Graphics();
-        this.hitbox.beginFill(0x268212, 0);
-        this.hitbox.drawRect(-25,-10,50,20);
-        this.hitbox.endFill();
+        this.Sshitbox = new Graphics();
+        this.Sshitbox.beginFill(0x268212, 0);
+        this.Sshitbox.drawRect(-25,-10,50,20);
+        this.Sshitbox.endFill();
 
         this.turboAnimations = new StateAnimations();
         this.turboAnimations.addState("normal", [
@@ -70,7 +73,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         this.cannonAnimations.filters = [new GlowFilter({color: 0xFF0000})];
 
         this.wholeShip.addChild(this.SsAnimations,this.turboAnimations);
-        this.addChild(this.wholeShip, this.hitbox);
+        this.addChild(this.wholeShip, this.Sshitbox);
 
         Keyboard.down.on("Enter", this.explode, this);
 
@@ -89,20 +92,36 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         this.turboAnimations.updateAnim(dt);
         if (!this.deadSs) {
             if (Keyboard.state.get("ArrowRight")) {
-                this.speed.x = Spaceship.SS_SPEED;
+                if (this.turboSs) {
+                    this.speed.x = Spaceship.SS_SPEED+100;
+                } else {
+                    this.speed.x = Spaceship.SS_SPEED;
+                }
             } else {
                 this.speed.x = 0;
             }
             if (Keyboard.state.get("ArrowLeft")) {
-                this.speed.x = -Spaceship.SS_SPEED;
+                if (this.turboSs) {
+                    this.speed.x = -Spaceship.SS_SPEED-100;
+                } else {
+                    this.speed.x = -Spaceship.SS_SPEED;
+                }
             }
             if (Keyboard.state.get("ArrowUp")) {
-                this.speed.y = -Spaceship.SS_SPEED;
+                if (this.turboSs) {
+                    this.speed.y = -Spaceship.SS_SPEED-100;
+                } else {
+                    this.speed.y = -Spaceship.SS_SPEED;
+                }
             } else {
                 this.speed.y = 0;
             }
             if (Keyboard.state.get("ArrowDown")) {
-                this.speed.y = Spaceship.SS_SPEED;
+                if (this.turboSs) {
+                    this.speed.y = Spaceship.SS_SPEED+100;
+                } else {
+                    this.speed.y = Spaceship.SS_SPEED;
+                }
             }
 
         }
@@ -110,30 +129,36 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     }
 
     public explode() {
-        this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
-        this.SsAnimations.playState("explode");
-        this.deadSs = true;
-        new Tween({dc:0}).to({dc:1},400).onComplete(()=>{
-            this.removeChild(this.wholeShip);
-        }).start();
+        if (this.shieldSs) {
+            this.shieldSs = false;
+        } else {
+            this.damageUpSs = false;
+            this.turboSs = false;
+            this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
+            this.SsAnimations.playState("explode");
+            this.deadSs = true;
+            new Tween({dc:0}).to({dc:1},400).onComplete(()=>{
+                this.removeChild(this.wholeShip);
+            }).start();
+        }
     }
 
     public shoot() {
-        if (!this.shooting) {
-            this.shooting = true;
+        if (!this.shootingSs) {
+            this.shootingSs = true;
             this.wholeShip.addChild(this.cannonAnimations);
             this.cannonAnimations.playState("shooting");
             new Tween({dc:0})
             .to({dc:1},100)
             .onComplete(()=>{
-                this.shooting = false;
+                this.shootingSs = false;
                 this.wholeShip.removeChild(this.cannonAnimations);
             }).start();
         }
     }
 
     public getHitbox():Rectangle {
-        return this.hitbox.getBounds();
+        return this.Sshitbox.getBounds();
     }
 
     public separate(overlap: Rectangle, solid: ObservablePoint<any>) {
@@ -153,12 +178,35 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
     }
 
+    public getBonus(bonus: string) {
+        switch (bonus) {
+            case "turbo":
+                this.turboSs = true;
+                break;
+        
+            case "shield":
+                this.shieldSs = true;
+                break;
+        
+            case "damage":
+                this.damageUpSs = true;
+                break;
+        
+            default:
+                break;
+        }
+    }
+
     public dealDamage():number {
-        return this.damage;
+        if (this.damageUpSs){
+            return this.damageSs*2;
+        } else {
+            return this.damageSs;
+        }
     }
 
     public isShooting() {
-        return this.shooting;
+        return this.shootingSs;
     }
 
     public isDead() {

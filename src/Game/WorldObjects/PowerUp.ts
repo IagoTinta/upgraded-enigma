@@ -8,6 +8,7 @@ export class PowerUp extends StateAnimations implements InterHitbox {
 
     private hitbox: Graphics;
     public pickeable: boolean = false;
+    public bonus = "";
 
     constructor() {
 
@@ -35,6 +36,15 @@ export class PowerUp extends StateAnimations implements InterHitbox {
             "PUexp8.png",
             "PUexp9.png",
         ], 0.5, false);
+        this.addState("PUshield", [
+            "Shield.png"
+        ], 1);
+        this.addState("PUdamage", [
+            "DamageBonus.png"
+        ], 1);
+        this.addState("PUturbo", [
+            "Turbo.png"
+        ], 1);
         this.playState("PUmoving");
 
         this.hitbox = new Graphics();
@@ -54,7 +64,28 @@ export class PowerUp extends StateAnimations implements InterHitbox {
         this.playState("PUexplode");
         new Tween({dc:0}).
         to({dc:1}, 100).
-        onComplete(()=>{this.pickeable = true}).
+        onComplete(()=>{
+            this.pickeable = true;
+            switch (Math.floor((Math.random()*3)+1)) {
+                case 1:
+                    this.playState("PUturbo");
+                    this.bonus = "turbo";
+                    break;
+                case 2:
+                    this.playState("PUshield");
+                    this.bonus = "shield";
+                    break;
+                case 3:
+                    this.playState("PUdamage");
+                    this.bonus = "damage";
+                    break;
+            
+                default:
+                    this.playState("PUturbo");
+                    this.bonus = "turbo";
+                    break;
+            }
+        }).
         start();
     }
     public respawn() {

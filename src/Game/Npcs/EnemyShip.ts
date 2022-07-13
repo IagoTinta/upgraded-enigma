@@ -75,6 +75,8 @@ export class EnemyShip extends PhysicsContainer implements InterUpdateable, Inte
     public respawn() {
         this.health = 50;
         this.enemyShip.playState("idleEnemy");
+        this.speed.x = -EnemyShip.MOVE_SPEED;
+        this.enemyShip.addChild(this.hitbox);
         this.enemyDead = false;
     }
 

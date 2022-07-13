@@ -82,38 +82,3 @@ export namespace Manager {
     }
 
 }
-
-/*
-const loadingBar= new Container();
-const bar = new Graphics();
-bar.beginFill(0xFFFFFF,1);
-bar.drawRect(0,0,700,250);
-bar.endFill();
-const fill = new Graphics();
-fill.beginFill(0xFF0000,1);
-fill.drawRect(25,25,650,200);
-fill.endFill();
-fill.scale.x = 0;
-loadingBar.addChild(bar,fill);
-loadingBar.pivot.set(loadingBar.width/2,loadingBar.height/2);
-loadingBar.position.set(WIDTH/2,(HEIGHT/2)-100);
-loadingBar.scale.y = 0.5;
-
-fill.scale.x = Loader.shared.progress/100;
-
-const play = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-	play.position.set(WIDTH/2,(HEIGHT/2)+100);
-	const playText = new Text("Launch",TEXT_STYLE);
-	playText.anchor.set(0.5);
-	playText.position.copyFrom(play.position);
-	app.stage.addChild(play,playText);
-	play.on(Button.CLICKED_EVENT, ()=>{
-
-		myScene = new Level();
-		
-		play.destroy();
-		loadingBar.destroy();
-		playText.destroy();
-
-	});
-*/

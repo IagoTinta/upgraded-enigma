@@ -1,17 +1,16 @@
 import { Container } from "@pixi/display";
 import { Sound, sound } from "@pixi/sound";
-import { NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
+import { NineSlicePlane, Sprite, Text, Texture } from "pixi.js";
+import { BaseScene } from "../Game/Utils/BaseScene";
 import { Button } from "../Game/Utils/Button";
-import { InterUpdateable } from "../Game/Utils/InterUpdateable";
 import { Manager } from "../Game/Utils/Manager";
 import { Level } from "./Level";
 
 
-export class MainMenu extends Container implements InterUpdateable {
+export class MainMenu extends BaseScene {
 
     private mainMenuMusic: Sound;
-    private backgrounds:TilingSprite[];
-    private currentBack:TilingSprite;
+    private background:Sprite;
     private menuScreen:Container;
     private creditsScreen: Container;
     private SFX: Map<String,Sound>;
@@ -20,23 +19,15 @@ export class MainMenu extends Container implements InterUpdateable {
     constructor() {
         super();
 
-        this.backgrounds = [];
-        const backg1 = new TilingSprite(Texture.from("AmatistDream"),Manager.WIDTH,Manager.HEIGHT);
-        this.backgrounds.push(backg1);
-        const backg2 = new TilingSprite(Texture.from("FrostWoods"),Manager.WIDTH,Manager.HEIGHT);
-        this.backgrounds.push(backg2);
-        const backg3 = new TilingSprite(Texture.from("MushroomLand"),Manager.WIDTH,Manager.HEIGHT);
-        this.backgrounds.push(backg3);
-        const backg4 = new TilingSprite(Texture.from("TropicalGrounds"),Manager.WIDTH,Manager.HEIGHT);
-        this.backgrounds.push(backg4);
-        this.currentBack = this.backgrounds[Math.floor(Math.random()*this.backgrounds.length)];
-        this.addChild(this.currentBack);
+        this.background = Sprite.from("MainMenuBack");
+        this.background.scale.set(0.5);
+        this.addChild(this.background);
 
         this.menuScreen = new Container();
 
         const menuBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
         const menuBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
-        const menuTittle: Text = new Text("Larry's Adventure Day", Manager.TEXT_STYLE);
+        const menuTittle: Text = new Text("Battle for Andromeda", Manager.TEXT_STYLE);
         this.menuScreen.addChild(menuBoard,menuBoardtittle,menuTittle);
         menuBoardtittle.position.set(166,-50);
         menuTittle.anchor.set(0.5);
@@ -46,18 +37,16 @@ export class MainMenu extends Container implements InterUpdateable {
         this.menuScreen.position.set(Manager.WIDTH/2,Manager.HEIGHT/2);
         this.addChild(this.menuScreen);
 
-        this.mainMenuMusic = sound.find("Prueba");
+        this.mainMenuMusic = sound.find("MainMenuMusic");
         this.mainMenuMusic.play({volume:0.2,singleInstance:true,loop:true});
         this.mainMenuMusic.muted = false;
         this.SFX = new Map([]);
-        const creditsSound = sound.find("Credits"); 
-        this.SFX.set("Credits",creditsSound);
-        const startSound = sound.find("Start"); 
-        this.SFX.set("Start",startSound);
+        const selectSound = sound.find("Select"); 
+        this.SFX.set("Select",selectSound);
 
         const start = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         start.position.set(272.5,250);
-        const startText: Text = new Text("¡Let's Go!", Manager.TEXT_STYLE);
+        const startText: Text = new Text("Start", Manager.TEXT_STYLE);
         startText.anchor.set(0.5);
         startText.position.copyFrom(start.position);
         start.on(Button.CLICKED_EVENT, this.startGame, this);
@@ -90,16 +79,7 @@ export class MainMenu extends Container implements InterUpdateable {
         const creditsTextWindow = new NineSlicePlane(Texture.from("textWindow"),35,35,35,35);
         const creditsTittle: Text = new Text("Credits\nMade by Tragedy Boy", Manager.TEXT_STYLE);
         const creditsLore: Text = new Text(
-            "Welcome to Evernite! Where honor and bravery are everywhere, \n" +
-            "and knighthood is the way to go. In a world where hard work is \n" +
-            " the only way to achieve greatness, why would Larry waste \n" +
-            " his time trying to be someone when there's awesome knights \n" +
-            " everywhere?. But one day, the Dark Lord Zaan \n" + 
-            "returned, and, strongest than ever, he wiped \n" + 
-            "out all the knights... All, except for one. Now, \n" +
-            "Larry has the difficult task to save the world and \n" + 
-            "destroy The Dark Lord once and for all. \n" + 
-            "Will he succeed? Only you can help him!", 
+            "Pending Text", 
             Manager.TEXT_STYLE);
         this.creditsScreen.addChild(creditsBoard,creditsTextWindow,creditsLore,creditsBoardtittle,creditsTittle);
         creditsBoardtittle.position.set(166,-50);
@@ -125,28 +105,25 @@ export class MainMenu extends Container implements InterUpdateable {
 
     }
 
-    public update (deltaTime: number, _deltaFrame: number):void {
-
-        this.currentBack.tilePosition.x -= this.worldTransform.a * deltaTime;
+    public update (_deltaTime: number, _deltaFrame: number):void {
 
     }
 
     public startGame() {
-        const auxSound = this.SFX.get("Start");
+        const auxSound = this.SFX.get("Select");
         auxSound?.play({volume: 0.2, singleInstance: true,speed:1.1});
         this.mainMenuMusic.muted = true;
-        const newScene = new Level();
-        Manager.changeScene(newScene)
+        Manager.changeScene(new Level());
     }
     public changeScreen() {
         if (!this.onCredits) {
-            const auxSound = this.SFX.get("Credits");
+            const auxSound = this.SFX.get("Select");
             auxSound?.play({volume: 0.5, singleInstance: true,speed:1.1});
             this.removeChild(this.menuScreen);
             this.addChild(this.creditsScreen);
             this.onCredits = true;
         } else if (this.onCredits) {
-            const auxSound = this.SFX.get("Credits");
+            const auxSound = this.SFX.get("Select");
             auxSound?.play({volume: 0.5, singleInstance: true,speed:1.1});
             this.removeChild(this.creditsScreen);
             this.addChild(this.menuScreen);
@@ -161,7 +138,7 @@ export class MainMenu extends Container implements InterUpdateable {
         }
     }
     private muteSFX() {
-        if (!this.SFX.get("Start")?.muted) {
+        if (!this.SFX.get("Select")?.muted) {
             this.SFX.forEach((key)=> key.muted = true);
         } else {
             this.SFX.forEach((key)=> key.muted = false);
