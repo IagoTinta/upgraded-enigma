@@ -65,6 +65,12 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             "Ship3_normal_flight_03.png",
             "Ship3_normal_flight_04.png"
         ], 0.25);
+        this.turboAnimations.addState("turbo", [
+            "Ship3_turbo_flight_1.png",
+            "Ship3_turbo_flight_2.png",
+            "Ship3_turbo_flight_3.png",
+            "Ship3_turbo_flight_4.png",
+        ], 0.25, true);
         this.turboAnimations.playState("normal");
 
         this.turboAnimations.position.set(this.SsAnimations.x-50,this.SsAnimations.y);
@@ -93,7 +99,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         if (!this.deadSs) {
             if (Keyboard.state.get("ArrowRight")) {
                 if (this.turboSs) {
-                    this.speed.x = Spaceship.SS_SPEED+100;
+                    this.speed.x = Spaceship.SS_SPEED+125;
                 } else {
                     this.speed.x = Spaceship.SS_SPEED;
                 }
@@ -102,14 +108,14 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             }
             if (Keyboard.state.get("ArrowLeft")) {
                 if (this.turboSs) {
-                    this.speed.x = -Spaceship.SS_SPEED-100;
+                    this.speed.x = -Spaceship.SS_SPEED-125;
                 } else {
                     this.speed.x = -Spaceship.SS_SPEED;
                 }
             }
             if (Keyboard.state.get("ArrowUp")) {
                 if (this.turboSs) {
-                    this.speed.y = -Spaceship.SS_SPEED-100;
+                    this.speed.y = -Spaceship.SS_SPEED-125;
                 } else {
                     this.speed.y = -Spaceship.SS_SPEED;
                 }
@@ -118,7 +124,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             }
             if (Keyboard.state.get("ArrowDown")) {
                 if (this.turboSs) {
-                    this.speed.y = Spaceship.SS_SPEED+100;
+                    this.speed.y = Spaceship.SS_SPEED+125;
                 } else {
                     this.speed.y = Spaceship.SS_SPEED;
                 }
@@ -182,6 +188,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         switch (bonus) {
             case "turbo":
                 this.turboSs = true;
+                this.turboAnimations.playState("turbo");
                 break;
         
             case "shield":

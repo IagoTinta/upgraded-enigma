@@ -1,6 +1,6 @@
 import { Container, Texture, TilingSprite } from "pixi.js";
 import { Tween } from "tweedle.js";
-import { EnemyShip } from "../Game/Npcs/EnemyShip";
+import { BigEnemy } from "../Game/Npcs/BigEnemy";
 import { Spaceship } from "../Game/Npcs/Spaceship";
 import { BaseScene } from "../Game/Utils/BaseScene";
 import { checkCollision } from "../Game/Utils/InterHitbox";
@@ -10,6 +10,8 @@ import { StateAnimations } from "../Game/Utils/StateAnimations";
 import { PowerUp } from "../Game/WorldObjects/PowerUp";
 import { Wall } from "../Game/WorldObjects/Wall";
 import { GlowFilter } from "@pixi/filter-glow";
+import { sound, Sound } from "@pixi/sound";
+import { SmallEnemy } from "../Game/Npcs/SmallEnemy";
 
 
 export class Level extends BaseScene {
@@ -17,17 +19,25 @@ export class Level extends BaseScene {
     private world: Container;
     private background: TilingSprite;
     private mySpaceship: Spaceship;
-    private enemies: EnemyShip[];
+    private bigEnemies: BigEnemy[];
+    private smallEnemies: SmallEnemy[];
     private powerup: PowerUp;
     private walls: Wall[];
     private proyectiles: Map<StateAnimations,Wall> = new Map();
-    private enemyProyectiles: Map<StateAnimations,Wall> = new Map();
+    private bigEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private PUactive: boolean = false;
     private laserGlow: GlowFilter;
+    private levelMusic: Sound;
 
     constructor() {
 
         super();
+
+        this.levelMusic = sound.find("Level1Music");
+        this.levelMusic.play({volume: 0.25, singleInstance: true, loop: true});
+        this.levelMusic.muted = false;
+        console.log(this.levelMusic.isPlaying);
+
         this.world = new Container;
         this.background = new TilingSprite(Texture.from("background"), Manager.WIDTH, Manager.HEIGHT);
         this.mySpaceship = new Spaceship();
@@ -52,12 +62,19 @@ export class Level extends BaseScene {
             this.mySpaceship,
         );
 
-        this.enemies = [];
-        for (let i = 0; i<5; i++) {
-            const newEnemy = new EnemyShip();
-            this.respawnEnemy(newEnemy);
-            this.enemies.push(newEnemy);
-            this.addChild(newEnemy);
+        this.bigEnemies = [];
+        for (let i = 0; i<3; i++) {
+            const newBE = new BigEnemy();
+            this.respawnEnemy(newBE);
+            this.bigEnemies.push(newBE);
+            this.addChild(newBE);
+        }
+        this.smallEnemies = [];
+        for (let i = 0; i<10; i++) {
+            const newSE = new SmallEnemy();
+            this.respawnEnemy(newSE);
+            this.smallEnemies.push(newSE);
+            this.addChild(newSE);
         }
 
         this.addChild(
@@ -96,7 +113,19 @@ export class Level extends BaseScene {
             proy.x += 30;
             if (hx) {
                 hx.position.copyFrom(proy);
-                for (let enemy of this.enemies) {
+                for (let enemy of this.bigEnemies) {
+                    const hitEnemy = checkCollision(hx,enemy);
+                    if (hitEnemy != null) {
+                        proy.playState("landed");
+                        proy.x -= 30;
+                        enemy.receiveDamage(this.mySpaceship.dealDamage());
+                        new Tween({dc:0}).
+                        to({dc:1},1).
+                        onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                        start();
+                    }
+                }
+                for (let enemy of this.smallEnemies) {
                     const hitEnemy = checkCollision(hx,enemy);
                     if (hitEnemy != null) {
                         proy.playState("landed");
@@ -123,9 +152,9 @@ export class Level extends BaseScene {
                 this.destProy(this.proyectiles,proy,hx);
             }
         }
-        for (let eproy of this.enemyProyectiles.keys()) {
+        for (let eproy of this.bigEnemyProyectiles.keys()) {
             eproy.updateAnim(deltaTime);
-            const ehx = this.enemyProyectiles.get(eproy);
+            const ehx = this.bigEnemyProyectiles.get(eproy);
             eproy.x -= 3.5;
             if (ehx) {
                 ehx.position.copyFrom(eproy);
@@ -136,17 +165,17 @@ export class Level extends BaseScene {
                     this.mySpaceship.explode();
                     new Tween({dc:0}).
                     to({dc:1},1).
-                    onComplete(()=>{this.destProy(this.enemyProyectiles,eproy,ehx)}).
+                    onComplete(()=>{this.destProy(this.bigEnemyProyectiles,eproy,ehx)}).
                     start();
                 }
             }
             if (eproy.x < -100) {
-                this.destProy(this.enemyProyectiles,eproy,ehx);
+                this.destProy(this.bigEnemyProyectiles,eproy,ehx);
             }
         }
 
-        for (let enemy of this.enemies) {
-            if (enemy.enemyDead) {
+        for (let enemy of this.bigEnemies) {
+            if (enemy.bigEnemyDead) {
                 this.removeChild(enemy);
                 new Tween({dc:0}).
                 to({dc:1}, 2000).
@@ -154,7 +183,22 @@ export class Level extends BaseScene {
                 start();
             } else {
                 enemy.update(deltaTime);
-                this.enemyShoot(enemy)
+                this.bigEnemyShoot(enemy)
+                if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
+                    this.respawnEnemy(enemy);
+                }
+            }
+        }
+        for (let enemy of this.smallEnemies) {
+            if (enemy.smallEnemyDead) {
+                this.removeChild(enemy);
+                new Tween({dc:0}).
+                to({dc:1}, 2000).
+                onComplete(()=>{this.respawnEnemy(enemy)}).
+                start();
+            } else {
+                enemy.update(deltaTime);
+                //this.bigEnemyShoot(enemy)
                 if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
                     this.respawnEnemy(enemy);
                 }
@@ -188,14 +232,24 @@ export class Level extends BaseScene {
 
     }
 
-    public respawnEnemy(enemy: EnemyShip) {
+    public respawnEnemy(enemy: BigEnemy | SmallEnemy) {
         enemy.respawn();
         enemy.position.set(Manager.WIDTH+100, Math.random()*(Manager.HEIGHT+600)-300);
-        if (enemy.position.y < Manager.HEIGHT/4) {
-            enemy.speed.y = 50;
+        if (enemy instanceof BigEnemy) {
+            if (enemy.position.y < Manager.HEIGHT/4) {
+                enemy.speed.y = 50;
+            }
+            if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                enemy.speed.y = -50;
+            }
         }
-        if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-            enemy.speed.y = -50;
+        if (enemy instanceof SmallEnemy) {
+            if (enemy.position.y < Manager.HEIGHT/4) {
+                enemy.speed.y = 125;
+            }
+            if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                enemy.speed.y = -125;
+            }
         }
         this.addChild(enemy);
     }
@@ -221,9 +275,9 @@ export class Level extends BaseScene {
         }
     }
 
-    private enemyShoot(enemy: EnemyShip) {
-        if (!enemy.shooting) {
-            enemy.shooting = true;
+    private bigEnemyShoot(enemy: BigEnemy) {
+        if (!enemy.bigShooting) {
+            enemy.bigShooting = true;
             const proyectile = new StateAnimations();
             proyectile.addState("shoted",["proyectile3.png"], 0.5);
             proyectile.addState("landed", [
@@ -233,14 +287,14 @@ export class Level extends BaseScene {
                 "shot3_exp4.png"
             ], 0.5, false);
             proyectile.playState("shoted");
-            proyectile.position.set(enemy.x-100, enemy.y);
+            proyectile.position.set(enemy.x, enemy.y);
             const proyHx = new Wall(15,15);
             proyHx.position.copyFrom(proyectile);
             this.addChild(proyectile,proyHx);
-            this.enemyProyectiles.set(proyectile,proyHx);
+            this.bigEnemyProyectiles.set(proyectile,proyHx);
             new Tween({dc:0}).
             to({dc:1}, 1500).
-            onComplete(()=>{enemy.shooting = false}).
+            onComplete(()=>{enemy.bigShooting = false}).
             start();
         }
     }

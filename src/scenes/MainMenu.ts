@@ -38,7 +38,7 @@ export class MainMenu extends BaseScene {
         this.addChild(this.menuScreen);
 
         this.mainMenuMusic = sound.find("MainMenuMusic");
-        this.mainMenuMusic.play({volume:0.2,singleInstance:true,loop:true});
+        this.mainMenuMusic.play({volume:0.25,singleInstance:true,loop:true});
         this.mainMenuMusic.muted = false;
         this.SFX = new Map([]);
         const selectSound = sound.find("Select"); 
