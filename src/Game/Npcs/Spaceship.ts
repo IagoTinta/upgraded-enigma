@@ -14,13 +14,13 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     private turboAnimations: StateAnimations;
     private cannonAnimations: StateAnimations;
     private wholeShip: Container;
-    private deadSs = false;
     private Sshitbox: Graphics;
     private shootingSs = false;
     private damageSs = 10;
     private turboSs = false;
     private damageUpSs = false;
-    private shieldSs = false;
+    private shieldSs = true;
+    private lifes = 0;
     
     private static readonly SS_SPEED = 200;
 
@@ -55,7 +55,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
         this.Sshitbox = new Graphics();
         this.Sshitbox.beginFill(0x268212, 0);
-        this.Sshitbox.drawRect(-25,-10,50,20);
+        this.Sshitbox.drawRect(-15,-7.5,30,15);
         this.Sshitbox.endFill();
 
         this.turboAnimations = new StateAnimations();
@@ -96,7 +96,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         super.update(dt);
         this.SsAnimations.updateAnim(dt);
         this.turboAnimations.updateAnim(dt);
-        if (!this.deadSs) {
+        if (this.lifes>-1) {
             if (Keyboard.state.get("ArrowRight")) {
                 if (this.turboSs) {
                     this.speed.x = Spaceship.SS_SPEED+125;
@@ -138,11 +138,13 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         if (this.shieldSs) {
             this.shieldSs = false;
         } else {
+            this.lifes--;
             this.damageUpSs = false;
             this.turboSs = false;
+            this.shieldSs = true;
             this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
             this.SsAnimations.playState("explode");
-            this.deadSs = true;
+            this.removeChild(this.Sshitbox);
             new Tween({dc:0}).to({dc:1},400).onComplete(()=>{
                 this.removeChild(this.wholeShip);
             }).start();
@@ -162,6 +164,15 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             }).start();
         }
     }
+
+    // public respawn() {
+    //     this.wholeShip.addChild(this.cannonAnimations, this.turboAnimations);
+    //     this.SsAnimations.playState("idle");
+    //     new Tween({dc:0}).
+    //     to({dc:1}, 2000).
+    //     onComplete(()=>{this.addChild(this.Sshitbox)}).
+    //     start();
+    // }
 
     public getHitbox():Rectangle {
         return this.Sshitbox.getBounds();
@@ -217,6 +228,10 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     }
 
     public isDead() {
-        return this.deadSs;
+        if (this.lifes<=-1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

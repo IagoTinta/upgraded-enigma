@@ -13,10 +13,10 @@ export class MainMenu extends BaseScene {
     private background:Sprite;
     private menuScreen:Container;
     private creditsScreen: Container;
-    private SFX: Map<String,Sound>;
+    private SFX: Sound;
     private onCredits = false;
 
-    constructor() {
+    constructor(musicMuted: boolean, SFXMuted: boolean) {
         super();
 
         this.background = Sprite.from("MainMenuBack");
@@ -39,10 +39,9 @@ export class MainMenu extends BaseScene {
 
         this.mainMenuMusic = sound.find("MainMenuMusic");
         this.mainMenuMusic.play({volume:0.25,singleInstance:true,loop:true});
-        this.mainMenuMusic.muted = false;
-        this.SFX = new Map([]);
-        const selectSound = sound.find("Select"); 
-        this.SFX.set("Select",selectSound);
+        this.mainMenuMusic.muted = musicMuted;
+        this.SFX = sound.find("Select");
+        this.SFX.muted = SFXMuted;
 
         const start = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         start.position.set(272.5,250);
@@ -110,21 +109,18 @@ export class MainMenu extends BaseScene {
     }
 
     public startGame() {
-        const auxSound = this.SFX.get("Select");
-        auxSound?.play({volume: 0.2, singleInstance: true,speed:1.1});
+        this.SFX.play({volume: 0.2, singleInstance: true});
+        Manager.changeScene(new Level(this.mainMenuMusic.muted, this.SFX.muted));
         this.mainMenuMusic.muted = true;
-        Manager.changeScene(new Level());
     }
     public changeScreen() {
         if (!this.onCredits) {
-            const auxSound = this.SFX.get("Select");
-            auxSound?.play({volume: 0.5, singleInstance: true,speed:1.1});
+            this.SFX.play({volume: 0.5, singleInstance: true});
             this.removeChild(this.menuScreen);
             this.addChild(this.creditsScreen);
             this.onCredits = true;
         } else if (this.onCredits) {
-            const auxSound = this.SFX.get("Select");
-            auxSound?.play({volume: 0.5, singleInstance: true,speed:1.1});
+            this.SFX.play({volume: 0.5, singleInstance: true});
             this.removeChild(this.creditsScreen);
             this.addChild(this.menuScreen);
             this.onCredits = false;
@@ -138,10 +134,10 @@ export class MainMenu extends BaseScene {
         }
     }
     private muteSFX() {
-        if (!this.SFX.get("Select")?.muted) {
-            this.SFX.forEach((key)=> key.muted = true);
+        if (!this.SFX.muted) {
+            this.SFX.muted = true;
         } else {
-            this.SFX.forEach((key)=> key.muted = false);
+            this.SFX.muted = false;
         }
     }
 

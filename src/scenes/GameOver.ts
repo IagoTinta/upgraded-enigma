@@ -53,9 +53,8 @@ export class GameOver extends Container implements InterUpdateable{
     public back2Menu() {
         const auxSound = sound.find("Start");
         auxSound.play({volume: 0.2, singleInstance: true,speed:1.1});
+        Manager.changeScene(new MainMenu(this.music.muted, false));
         this.music.muted = true;
-        const newScene = new MainMenu();
-        Manager.changeScene(newScene)
     }
 
 }

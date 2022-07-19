@@ -27,6 +27,7 @@ export const assets = [
     {url:"/Spaceships/SsShots.json", name: "SsShots"},
     {url:"/Explosions/Explosions.json", name: "Explosions"},
     {url:"/Explosions/Explosions2.json", name: "Explosions2"},
+    {url:"/Explosions/Explosions3.json", name: "Explosions3"},
     {url:"/EnemyShips/Boss1.png", name: "Boss1"},
     {url:"/EnemyShips/Enemies.json", name: "Enemies"},
     {url: "/Miscellaneous/Misc1.json", name: "Misc1"},

@@ -1,0 +1,255 @@
+{
+  "frames": {
+    "MediumExplosion_9.png": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 635,
+        "h": 594
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 24,
+        "w": 635,
+        "h": 594
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_10.png": {
+      "frame": {
+        "x": 2,
+        "y": 600,
+        "w": 613,
+        "h": 597
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 14,
+        "y": 22,
+        "w": 613,
+        "h": 597
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_7.png": {
+      "frame": {
+        "x": 619,
+        "y": 600,
+        "w": 550,
+        "h": 532
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 44,
+        "y": 75,
+        "w": 550,
+        "h": 532
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_8.png": {
+      "frame": {
+        "x": 641,
+        "y": 2,
+        "w": 518,
+        "h": 526
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 32,
+        "y": 59,
+        "w": 518,
+        "h": 526
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_6.png": {
+      "frame": {
+        "x": 1163,
+        "y": 2,
+        "w": 490,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 60,
+        "y": 91,
+        "w": 490,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_5.png": {
+      "frame": {
+        "x": 1173,
+        "y": 496,
+        "w": 441,
+        "h": 398
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 81,
+        "y": 130,
+        "w": 441,
+        "h": 398
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_4.png": {
+      "frame": {
+        "x": 1173,
+        "y": 898,
+        "w": 321,
+        "h": 274
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 151,
+        "y": 186,
+        "w": 321,
+        "h": 274
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_3.png": {
+      "frame": {
+        "x": 619,
+        "y": 1136,
+        "w": 275,
+        "h": 234
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 185,
+        "y": 217,
+        "w": 275,
+        "h": 234
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_2.png": {
+      "frame": {
+        "x": 898,
+        "y": 1136,
+        "w": 194,
+        "h": 180
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 224,
+        "y": 231,
+        "w": 194,
+        "h": 180
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "MediumExplosion_1.png": {
+      "frame": {
+        "x": 1096,
+        "y": 1176,
+        "w": 182,
+        "h": 167
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 230,
+        "y": 222,
+        "w": 182,
+        "h": 167
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "Explosions3.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1631,
+      "h": 1372
+    },
+    "scale": 1
+  }
+}

@@ -18,6 +18,7 @@ export namespace Manager {
         textBaseline: 'bottom',
         align: 'center'
     });
+    export const SOUND_MUTE = false;
     let currentScene: BaseScene;
     let app: Application;
     

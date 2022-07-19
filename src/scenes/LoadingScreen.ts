@@ -62,7 +62,7 @@ export class LoadingScreen extends BaseScene {
 
     private loadFinish() {
 
-        Manager.changeScene(new MainMenu());
+        Manager.changeScene(new MainMenu(false, false));
 
     }
     

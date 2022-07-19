@@ -13,6 +13,7 @@ export class SmallEnemy extends PhysicsContainer implements InterUpdateable, Int
     public static readonly MOVE_SPEED = 150;
     private health = 10;
     public smallEnemyDead = false;
+    public smallShooting = false;
 
     constructor() {
 
