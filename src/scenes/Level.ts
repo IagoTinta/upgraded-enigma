@@ -1,5 +1,5 @@
-import { Container, Texture, TilingSprite } from "pixi.js";
-import { Tween } from "tweedle.js";
+import { Container, NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
+import { Group, Tween } from "tweedle.js";
 import { BigEnemy } from "../Game/Npcs/BigEnemy";
 import { Spaceship } from "../Game/Npcs/Spaceship";
 import { BaseScene } from "../Game/Utils/BaseScene";
@@ -13,6 +13,10 @@ import { GlowFilter } from "@pixi/filter-glow";
 import { sound, Sound } from "@pixi/sound";
 import { SmallEnemy } from "../Game/Npcs/SmallEnemy";
 import { MediumEnemy } from "../Game/Npcs/MediumEnemy";
+import { GameOver } from "./GameOver";
+import { Button } from "../Game/Utils/Button";
+import { MainMenu } from "./MainMenu";
+import { XertacBoss } from "../Game/Npcs/XertacBoss";
 
 
 export class Level extends BaseScene {
@@ -34,6 +38,7 @@ export class Level extends BaseScene {
     private bigEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private mediumEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private smallEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
+    private boss: XertacBoss;
 
     //sound and effects
     private laserGlow: GlowFilter;
@@ -42,6 +47,9 @@ export class Level extends BaseScene {
 
     //miscellaneous
     private PUactive: boolean = false;
+    private onMenu: boolean = false;
+    private pauseMenu: Container;
+    private bossSpawned: boolean = false;
 
     constructor(musicMuted: boolean, SFXMuted: boolean) {
 
@@ -99,6 +107,7 @@ export class Level extends BaseScene {
             this.smallEnemies.push(newSE);
             this.addChild(newSE);
         }
+        this.boss = new XertacBoss();
 
         this.addChild(
             leftWall,
@@ -106,253 +115,316 @@ export class Level extends BaseScene {
             topWall,
             bottomWall
         );
-        
+
+        this.pauseMenu = new Container();
+
+        const pauseBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
+        const pauseBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
+        const pauseTittle: Text = new Text("Pause", Manager.TEXT_STYLE);
+        this.pauseMenu.addChild(pauseBoard,pauseBoardtittle,pauseTittle);
+        pauseBoardtittle.position.set(166,-50);
+        pauseTittle.anchor.set(0.5);
+        pauseTittle.position.set(522.5,15);
+        this.pauseMenu.scale.set(0);
+        this.pauseMenu.pivot.set(522.5,358);
+        this.pauseMenu.position.set(Manager.WIDTH/2,Manager.HEIGHT/2);
+
+        const resume = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
+        resume.position.set(272.5,250);
+        const resumeText: Text = new Text("Resume", Manager.TEXT_STYLE);
+        resumeText.anchor.set(0.5);
+        resumeText.position.copyFrom(resume);
+        resume.on(Button.CLICKED_EVENT,this.showMenu,this);
+        const muteMusic = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
+        muteMusic.position.set(272.5,500);
+        const muteMusicText: Text = new Text("Mute Music", Manager.TEXT_STYLE);
+        muteMusicText.anchor.set(0.5);
+        muteMusicText.position.copyFrom(muteMusic);
+        muteMusic.on(Button.CLICKED_EVENT,this.muteMusic,this);
+        const back2Menu = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
+        back2Menu.position.set(772.5,250);
+        const b2mText: Text = new Text("Back to \n Main Menu", Manager.TEXT_STYLE);
+        b2mText.anchor.set(0.5);
+        b2mText.position.copyFrom(back2Menu);
+        back2Menu.on(Button.CLICKED_EVENT,this.mainMenu,this);
+        const muteSFX = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
+        muteSFX.position.set(272.5,500);
+        const muteSFXText: Text = new Text("Mute Music", Manager.TEXT_STYLE);
+        muteSFXText.anchor.set(0.5);
+        muteSFXText.position.copyFrom(muteSFX);
+        muteSFX.on(Button.CLICKED_EVENT,this.muteSFX,this);
+        this.pauseMenu.addChild(resume,resumeText,muteSFX,muteSFXText,muteMusic,muteMusicText,back2Menu,b2mText);
+
+        new Tween({dc:0}).
+        to({dc:1}, /*300000*/5000).
+        onComplete(()=>{this.spawnBoss()}).
+        start();
             
         Keyboard.down.on("Space", this.shoot, this);
+        Keyboard.down.on("Escape",this.showMenu, this);
             
     }
 
     public override destroy(options:any) {
         super.destroy(options);
         Keyboard.down.off("Space", this.shoot);
+        Keyboard.down.off("Escape",this.showMenu);
     }
 
     public update (deltaTime: number, _deltaFrame: number):void {
 
-        this.mySpaceship.update(deltaTime);
-        this.powerup.updateAnim(deltaTime);
-        this.world.x -= 0.1 * this.worldTransform.a;
-        this.background.tilePosition.x = this.world.x * 10;
-
-        for (let wall of this.walls) {
-            const limit = checkCollision(this.mySpaceship,wall);
-            if (limit != null && !this.mySpaceship.isDead()) {
-                this.mySpaceship.separate(limit,wall.position);
-                this.mySpaceship.speed.set(0,0);
+        if (!this.onMenu) {
+            this.mySpaceship.update(deltaTime);
+            this.powerup.updateAnim(deltaTime);
+            this.world.x -= 0.1 * this.worldTransform.a;
+            this.background.tilePosition.x = this.world.x * 10;
+            this.boss.update(deltaTime);
+    
+            for (let wall of this.walls) {
+                const limit = checkCollision(this.mySpaceship,wall);
+                if (limit != null && !this.mySpaceship.isDead()) {
+                    this.mySpaceship.separate(limit,wall.position);
+                    this.mySpaceship.speed.set(0,0);
+                }
             }
-        }
-        for (let proy of this.proyectiles.keys()) {
-            proy.updateAnim(deltaTime);
-            const hx = this.proyectiles.get(proy);
-            proy.x += 30;
-            if (hx) {
-                hx.position.copyFrom(proy);
-                for (let enemy of this.bigEnemies) {
-                    const hitEnemy = checkCollision(hx,enemy);
-                    if (hitEnemy != null) {
+            for (let proy of this.proyectiles.keys()) {
+                proy.updateAnim(deltaTime);
+                const hx = this.proyectiles.get(proy);
+                proy.x += 30;
+                if (hx) {
+                    hx.position.copyFrom(proy);
+                    for (let enemy of this.bigEnemies) {
+                        const hitEnemy = checkCollision(hx,enemy);
+                        if (hitEnemy != null) {
+                            proy.playState("landed");
+                            proy.x -= 30;
+                            enemy.receiveDamage(this.mySpaceship.dealDamage());
+                            new Tween({dc:0}).
+                            to({dc:1},1).
+                            onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                            start();
+                        }
+                    }
+                    for (let enemy of this.mediumEnemies) {
+                        const hitEnemy = checkCollision(hx,enemy);
+                        if (hitEnemy != null) {
+                            proy.playState("landed");
+                            proy.x -= 30;
+                            enemy.receiveDamage(this.mySpaceship.dealDamage());
+                            new Tween({dc:0}).
+                            to({dc:1},1).
+                            onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                            start();
+                        }
+                    }
+                    for (let enemy of this.smallEnemies) {
+                        const hitEnemy = checkCollision(hx,enemy);
+                        if (hitEnemy != null) {
+                            proy.playState("landed");
+                            proy.x -= 30;
+                            enemy.receiveDamage(this.mySpaceship.dealDamage());
+                            new Tween({dc:0}).
+                            to({dc:1},1).
+                            onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                            start();
+                        }
+                    }
+                    const hitPU = checkCollision(hx,this.powerup);
+                    if (hitPU != null && !this.powerup.pickeable) {
                         proy.playState("landed");
                         proy.x -= 30;
-                        enemy.receiveDamage(this.mySpaceship.dealDamage());
+                        this.powerup.explode();
                         new Tween({dc:0}).
                         to({dc:1},1).
                         onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
                         start();
                     }
                 }
-                for (let enemy of this.mediumEnemies) {
-                    const hitEnemy = checkCollision(hx,enemy);
-                    if (hitEnemy != null) {
-                        proy.playState("landed");
-                        proy.x -= 30;
-                        enemy.receiveDamage(this.mySpaceship.dealDamage());
+                if (proy.x > Manager.WIDTH+(-this.world.x)) {
+                    this.destProy(this.proyectiles,proy,hx);
+                }
+            }
+            for (let beproy of this.bigEnemyProyectiles.keys()) {
+                beproy.updateAnim(deltaTime);
+                const ehx = this.bigEnemyProyectiles.get(beproy);
+                beproy.x -= 3.5;
+                if (ehx) {
+                    ehx.position.copyFrom(beproy);
+                    const hit = checkCollision(ehx,this.mySpaceship);
+                    if (hit != null) {
+                        beproy.playState("landed");
+                        beproy.x += 5;
+                        this.mySpaceship.explode();
                         new Tween({dc:0}).
                         to({dc:1},1).
-                        onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                        onComplete(()=>{this.destProy(this.bigEnemyProyectiles,beproy,ehx)}).
                         start();
                     }
                 }
-                for (let enemy of this.smallEnemies) {
-                    const hitEnemy = checkCollision(hx,enemy);
-                    if (hitEnemy != null) {
-                        proy.playState("landed");
-                        proy.x -= 30;
-                        enemy.receiveDamage(this.mySpaceship.dealDamage());
+                if (beproy.x < -100) {
+                    this.destProy(this.bigEnemyProyectiles,beproy,ehx);
+                }
+            }
+            for (let meproy of this.mediumEnemyProyectiles.keys()) {
+                meproy.updateAnim(deltaTime);
+                const ehx = this.mediumEnemyProyectiles.get(meproy);
+                meproy.x -= 3.5;
+                if (ehx) {
+                    ehx.position.copyFrom(meproy);
+                    const hit = checkCollision(ehx,this.mySpaceship);
+                    if (hit != null) {
+                        meproy.playState("landed");
+                        meproy.x += 5;
+                        this.mySpaceship.explode();
                         new Tween({dc:0}).
                         to({dc:1},1).
-                        onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                        onComplete(()=>{this.destProy(this.mediumEnemyProyectiles,meproy,ehx)}).
                         start();
                     }
                 }
-                const hitPU = checkCollision(hx,this.powerup);
-                if (hitPU != null && !this.powerup.pickeable) {
-                    proy.playState("landed");
-                    proy.x -= 30;
-                    this.powerup.explode();
-                    new Tween({dc:0}).
-                    to({dc:1},1).
-                    onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
-                    start();
+                if (meproy.x < -100) {
+                    this.destProy(this.mediumEnemyProyectiles,meproy,ehx);
                 }
             }
-            if (proy.x > Manager.WIDTH+(-this.world.x)) {
-                this.destProy(this.proyectiles,proy,hx);
-            }
-        }
-        for (let beproy of this.bigEnemyProyectiles.keys()) {
-            beproy.updateAnim(deltaTime);
-            const ehx = this.bigEnemyProyectiles.get(beproy);
-            beproy.x -= 3.5;
-            if (ehx) {
-                ehx.position.copyFrom(beproy);
-                const hit = checkCollision(ehx,this.mySpaceship);
-                if (hit != null) {
-                    beproy.playState("landed");
-                    beproy.x += 5;
-                    this.mySpaceship.explode();
-                    new Tween({dc:0}).
-                    to({dc:1},1).
-                    onComplete(()=>{this.destProy(this.bigEnemyProyectiles,beproy,ehx)}).
-                    start();
+            for (let seproy of this.smallEnemyProyectiles.keys()) {
+                seproy.updateAnim(deltaTime);
+                const ehx = this.smallEnemyProyectiles.get(seproy);
+                seproy.x -= 3.5;
+                if (ehx) {
+                    ehx.position.copyFrom(seproy);
+                    const hit = checkCollision(ehx,this.mySpaceship);
+                    if (hit != null) {
+                        seproy.playState("landed");
+                        seproy.x += 5;
+                        this.mySpaceship.explode();
+                        new Tween({dc:0}).
+                        to({dc:1},1).
+                        onComplete(()=>{this.destProy(this.smallEnemyProyectiles,seproy,ehx)}).
+                        start();
+                    }
+                }
+                if (seproy.x < -100) {
+                    this.destProy(this.smallEnemyProyectiles,seproy,ehx);
                 }
             }
-            if (beproy.x < -100) {
-                this.destProy(this.bigEnemyProyectiles,beproy,ehx);
-            }
-        }
-        for (let meproy of this.mediumEnemyProyectiles.keys()) {
-            meproy.updateAnim(deltaTime);
-            const ehx = this.mediumEnemyProyectiles.get(meproy);
-            meproy.x -= 3.5;
-            if (ehx) {
-                ehx.position.copyFrom(meproy);
-                const hit = checkCollision(ehx,this.mySpaceship);
-                if (hit != null) {
-                    meproy.playState("landed");
-                    meproy.x += 5;
-                    this.mySpaceship.explode();
+    
+            for (let enemy of this.bigEnemies) {
+                if (enemy.bigEnemyDead) {
+                    this.removeChild(enemy);
                     new Tween({dc:0}).
-                    to({dc:1},1).
-                    onComplete(()=>{this.destProy(this.mediumEnemyProyectiles,meproy,ehx)}).
+                    to({dc:1}, 2000).
+                    onComplete(()=>{this.respawnEnemy(enemy)}).
                     start();
+                } else {
+                    enemy.update(deltaTime);
+                    this.bigEnemyShoot(enemy)
+                    if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
+                        this.respawnEnemy(enemy);
+                    }
                 }
             }
-            if (meproy.x < -100) {
-                this.destProy(this.mediumEnemyProyectiles,meproy,ehx);
-            }
-        }
-        for (let seproy of this.smallEnemyProyectiles.keys()) {
-            seproy.updateAnim(deltaTime);
-            const ehx = this.smallEnemyProyectiles.get(seproy);
-            seproy.x -= 3.5;
-            if (ehx) {
-                ehx.position.copyFrom(seproy);
-                const hit = checkCollision(ehx,this.mySpaceship);
-                if (hit != null) {
-                    seproy.playState("landed");
-                    seproy.x += 5;
-                    this.mySpaceship.explode();
+            for (let enemy of this.mediumEnemies) {
+                if (enemy.mediumEnemyDead) {
+                    this.removeChild(enemy);
                     new Tween({dc:0}).
-                    to({dc:1},1).
-                    onComplete(()=>{this.destProy(this.smallEnemyProyectiles,seproy,ehx)}).
+                    to({dc:1}, 2000).
+                    onComplete(()=>{this.respawnEnemy(enemy)}).
                     start();
+                } else {
+                    enemy.update(deltaTime);
+                    this.mediumEnemyShoot(enemy)
+                    if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
+                        this.respawnEnemy(enemy);
+                    }
                 }
             }
-            if (seproy.x < -100) {
-                this.destProy(this.smallEnemyProyectiles,seproy,ehx);
+            for (let enemy of this.smallEnemies) {
+                if (enemy.smallEnemyDead) {
+                    this.removeChild(enemy);
+                    new Tween({dc:0}).
+                    to({dc:1}, 2000).
+                    onComplete(()=>{this.respawnEnemy(enemy)}).
+                    start();
+                } else {
+                    enemy.update(deltaTime);
+                    this.smallEnemyShoot(enemy)
+                    if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
+                        this.respawnEnemy(enemy);
+                    }
+                }
             }
-        }
+    
+            if (!this.PUactive) {
+                this.PUactive = true;
+                const timer = new Tween({dc:1}).
+                to({dc:1}, 90000).
+                onStart(()=>{
+                    this.powerup.position.set(Manager.WIDTH+100,Math.random()*500+100);
+                    this.powerup.respawn();
+                    this.addChild(this.powerup);
+                }).
+                onUpdate(()=>{
+                    this.powerup.x--;
+                    const picked = checkCollision(this.mySpaceship, this.powerup);
+                    if (picked != null && this.powerup.pickeable) {
+                        this.removeChild(this.powerup);
+                        this.powerup.pickeable = false;
+                        this.mySpaceship.getBonus(this.powerup.bonus);
+                    }
+                }).
+                onComplete(()=>{
+                    timer.restart();
+                    this.PUactive = false;
+                }).
+                start();
+            }
+    
+            if (this.mySpaceship.isDead()) {
+                this.gameover();
+            }
 
-        for (let enemy of this.bigEnemies) {
-            if (enemy.bigEnemyDead) {
-                this.removeChild(enemy);
-                new Tween({dc:0}).
-                to({dc:1}, 2000).
-                onComplete(()=>{this.respawnEnemy(enemy)}).
-                start();
-            } else {
-                enemy.update(deltaTime);
-                this.bigEnemyShoot(enemy)
-                if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
-                    this.respawnEnemy(enemy);
+            if (this.bossSpawned && !this.boss.isDead()) {
+                if (this.boss.y < 100) {
+                    this.boss.changeSpeed();
+                }
+                if (this.boss.y > 620) {
+                    this.boss.changeSpeed();
                 }
             }
-        }
-        for (let enemy of this.mediumEnemies) {
-            if (enemy.mediumEnemyDead) {
-                this.removeChild(enemy);
-                new Tween({dc:0}).
-                to({dc:1}, 2000).
-                onComplete(()=>{this.respawnEnemy(enemy)}).
-                start();
-            } else {
-                enemy.update(deltaTime);
-                this.mediumEnemyShoot(enemy)
-                if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
-                    this.respawnEnemy(enemy);
-                }
-            }
-        }
-        for (let enemy of this.smallEnemies) {
-            if (enemy.smallEnemyDead) {
-                this.removeChild(enemy);
-                new Tween({dc:0}).
-                to({dc:1}, 2000).
-                onComplete(()=>{this.respawnEnemy(enemy)}).
-                start();
-            } else {
-                enemy.update(deltaTime);
-                this.smallEnemyShoot(enemy)
-                if (enemy.position.x < -200 || enemy.position.y > Manager.HEIGHT+600 || enemy.position.y < -600) {
-                    this.respawnEnemy(enemy);
-                }
-            }
-        }
-
-        if (!this.PUactive) {
-            this.PUactive = true;
-            const timer = new Tween({dc:1}).
-            to({dc:1}, 90000).
-            onStart(()=>{
-                this.powerup.position.set(Manager.WIDTH+100,Math.random()*500+100);
-                this.powerup.respawn();
-                this.addChild(this.powerup);
-            }).
-            onUpdate(()=>{
-                this.powerup.x--;
-                const picked = checkCollision(this.mySpaceship, this.powerup);
-                if (picked != null && this.powerup.pickeable) {
-                    this.removeChild(this.powerup);
-                    this.powerup.pickeable = false;
-                    this.mySpaceship.getBonus(this.powerup.bonus);
-                }
-            }).
-            onComplete(()=>{
-                timer.restart();
-                this.PUactive = false;
-            }).
-            start();
         }
 
     }
 
     public respawnEnemy(enemy: BigEnemy | SmallEnemy | MediumEnemy) {
-        enemy.respawn();
-        enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
-        if (enemy instanceof BigEnemy) {
-            if (enemy.position.y < Manager.HEIGHT/4) {
-                enemy.speed.y = 35;
+        if (!this.bossSpawned) {
+            enemy.respawn();
+            enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
+            if (enemy instanceof BigEnemy) {
+                if (enemy.position.y < Manager.HEIGHT/4) {
+                    enemy.speed.y = 35;
+                }
+                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                    enemy.speed.y = -35;
+                }
             }
-            if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                enemy.speed.y = -35;
+            if (enemy instanceof MediumEnemy) {
+                if (enemy.position.y < Manager.HEIGHT/4) {
+                    enemy.speed.y = 50;
+                }
+                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                    enemy.speed.y = -50;
+                }
             }
+            if (enemy instanceof SmallEnemy) {
+                if (enemy.position.y < Manager.HEIGHT/4) {
+                    enemy.speed.y = 90;
+                }
+                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                    enemy.speed.y = -90;
+                }
+            }
+            this.addChild(enemy);
         }
-        if (enemy instanceof MediumEnemy) {
-            if (enemy.position.y < Manager.HEIGHT/4) {
-                enemy.speed.y = 50;
-            }
-            if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                enemy.speed.y = -50;
-            }
-        }
-        if (enemy instanceof SmallEnemy) {
-            if (enemy.position.y < Manager.HEIGHT/4) {
-                enemy.speed.y = 90;
-            }
-            if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                enemy.speed.y = -90;
-            }
-        }
-        this.addChild(enemy);
     }
 
     public shoot() {
@@ -456,56 +528,31 @@ export class Level extends BaseScene {
         
     }
 
-}
+    private spawnBoss() {
 
-/*
+        this.boss = new XertacBoss();
+        this.boss.position.set(Manager.WIDTH+200,Manager.HEIGHT/2);
+        this.bossSpawned = true;
+        this.addChild(this.boss);
+        new Tween(this.boss).
+        to({x: Manager.WIDTH-200}, 10000).
+        onComplete(()=>{this.boss.activate()}).
+        start();
 
-this.music = sound.find("algo");
-        this.music.play({volume:0.2,singleInstance:true,loop:true});
-        this.music.muted = false;
+    }
 
-        this.pauseMenu = new Container();
-
-        const pauseBoard = new NineSlicePlane(Texture.from("Board"),35,35,35,35);
-        const pauseBoardtittle = new NineSlicePlane(Texture.from("Tittle"),35,35,35,35);
-        const pauseTittle: Text = new Text("Pause", TEXT_STYLE);
-        this.pauseMenu.addChild(pauseBoard,pauseBoardtittle,pauseTittle);
-        pauseBoardtittle.position.set(166,-50);
-        pauseTittle.anchor.set(0.5);
-        pauseTittle.position.set(522.5,15);
-        this.pauseMenu.scale.set(0);
-        this.pauseMenu.pivot.set(522.5,358);
-        this.pauseMenu.position.set(WIDTH/2,HEIGHT/2);
-
-        const resume = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        resume.position.set(272.5,250);
-        const resumeText: Text = new Text("Resume", TEXT_STYLE);
-        resumeText.anchor.set(0.5);
-        resumeText.position.copyFrom(resume);
-        resume.on(Button.CLICKED_EVENT,this.showMenu,this);
-        const muteMusic = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        muteMusic.position.set(772.5,250);
-        const muteMusicText: Text = new Text("Mute Music", TEXT_STYLE);
-        muteMusicText.anchor.set(0.5);
-        muteMusicText.position.copyFrom(muteMusic);
-        muteMusic.on(Button.CLICKED_EVENT,this.muteMusic,this);
-        const back2Menu = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        back2Menu.position.set(522.5,500);
-        const b2mText: Text = new Text("Back to Main Menu", TEXT_STYLE);
-        b2mText.anchor.set(0.5);
-        b2mText.position.copyFrom(back2Menu);
-        back2Menu.on(Button.CLICKED_EVENT,this.mainMenu,this);
-        this.pauseMenu.addChild(resume,resumeText,muteMusic,muteMusicText,back2Menu,b2mText);
-    
-        Keyboard.down.on("Escape",this.showMenu,this);
-
-showMenu() {
+    private showMenu() {
         if (!this.onMenu) {
             this.onMenu = true;
             this.addChild(this.pauseMenu);
-            new Tween(this.pauseMenu).to({scale: {x:0.75, y:0.75}},250).start();
+            new Tween(this.pauseMenu).
+            to({scale: {x:0.75, y:0.75}},250).
+            onComplete(()=>{Group.shared.pause()}).
+            start();
         } else if (this.onMenu) {
-            new Tween(this.pauseMenu).to({scale: {x:0, y:0}},250)
+            Group.shared.resume();
+            new Tween(this.pauseMenu).
+            to({scale: {x:0, y:0}},250)
             .onComplete(()=>{
                 this.onMenu = false;
                 this.removeChild(this.pauseMenu);
@@ -514,16 +561,39 @@ showMenu() {
         }
     }
 
-   private muteMusic() {
-        if (!this.music.muted) {
-            this.music.muted = true;
+    private mainMenu() {
+        const [sfxmuted] = this.SFX.values();
+        Manager.changeScene(new MainMenu(this.levelMusic.muted,sfxmuted.muted));
+        this.levelMusic.muted = true;
+    }
+
+    private gameover() {
+        const sfxmuted = this.SFX.get("SsShooting");
+        new Tween({dc:0}).
+        to({dc:1}, 1000).
+        onComplete(()=>{
+            if (sfxmuted != undefined){
+                Manager.changeScene(new GameOver(this.levelMusic.muted,sfxmuted.muted))
+            }
+            this.levelMusic.muted = true;
+        }).
+        start();
+    }
+
+    private muteMusic() {
+        if (!this.levelMusic.muted) {
+            this.levelMusic.muted = true;
         } else {
-            this.music.muted = false;
+            this.levelMusic.muted = false;
         }
     }
-    private mainMenu() {
-        this.music.muted = true;
-        const newscene = new MainMenu();
-        changeScene(newscene);
-    } 
-*/
+    private muteSFX() {
+        const [auxSFX] = this.SFX.values();
+        if (auxSFX.muted) {
+            this.SFX.forEach((keys)=>{keys.muted = true});
+        } else {    
+            this.SFX.forEach((keys)=>{keys.muted = false});
+        }
+    }
+
+}

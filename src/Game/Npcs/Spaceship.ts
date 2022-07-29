@@ -1,4 +1,5 @@
 import { GlowFilter } from "@pixi/filter-glow";
+import { sound } from "@pixi/sound";
 import { Container, Graphics, ObservablePoint, Rectangle, Texture } from "pixi.js";
 import { Tween } from "tweedle.js";
 import { PhysicsContainer } from "../PhysicsContainer";
@@ -142,6 +143,8 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             this.damageUpSs = false;
             this.turboSs = false;
             this.shieldSs = true;
+            const explosion = sound.find("SsExplosion");
+            explosion.play({volume: 0.2, singleInstance: true});
             this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
             this.SsAnimations.playState("explode");
             this.removeChild(this.Sshitbox);
