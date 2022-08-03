@@ -1,4 +1,4 @@
-import { Container, NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
+import { BitmapText, Container, NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
 import { Group, Tween } from "tweedle.js";
 import { BigEnemy } from "../Game/Npcs/BigEnemy";
 import { Spaceship } from "../Game/Npcs/Spaceship";
@@ -26,6 +26,8 @@ export class Level extends BaseScene {
     private background: TilingSprite;
     private walls: Wall[];
     private powerup: PowerUp;
+    private score: Container;
+    private scorepoints: BitmapText;
 
     //player
     private mySpaceship: Spaceship;
@@ -38,6 +40,7 @@ export class Level extends BaseScene {
     private bigEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private mediumEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private smallEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
+    private bossProyectiles: Map<StateAnimations, Wall> = new Map();
     private boss: XertacBoss;
 
     //sound and effects
@@ -60,6 +63,9 @@ export class Level extends BaseScene {
         this.levelMusic.muted = musicMuted;
 
         this.SFX.set("SsShooting", sound.find("SsLaser"));
+        this.SFX.set("pickPU", sound.find("PowerUp"));
+        this.SFX.set("otherExplosion", sound.find("EnemyExplosion"));
+        this.SFX.set("bossExplosion", sound.find("BossExplosion"));
         this.SFX.forEach((key)=>key.muted = SFXMuted);
 
         this.world = new Container;
@@ -107,7 +113,7 @@ export class Level extends BaseScene {
             this.smallEnemies.push(newSE);
             this.addChild(newSE);
         }
-        this.boss = new XertacBoss();
+        this.boss = new XertacBoss(SFXMuted);
 
         this.addChild(
             leftWall,
@@ -148,20 +154,29 @@ export class Level extends BaseScene {
         b2mText.position.copyFrom(back2Menu);
         back2Menu.on(Button.CLICKED_EVENT,this.mainMenu,this);
         const muteSFX = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        muteSFX.position.set(272.5,500);
-        const muteSFXText: Text = new Text("Mute Music", Manager.TEXT_STYLE);
+        muteSFX.position.set(772.5,500);
+        const muteSFXText: Text = new Text("Mute SFX", Manager.TEXT_STYLE);
         muteSFXText.anchor.set(0.5);
         muteSFXText.position.copyFrom(muteSFX);
         muteSFX.on(Button.CLICKED_EVENT,this.muteSFX,this);
         this.pauseMenu.addChild(resume,resumeText,muteSFX,muteSFXText,muteMusic,muteMusicText,back2Menu,b2mText);
 
+        this.score = new Container();
+        const scoretext = new Text("Score: ", Manager.TEXT_STYLE);
+        scoretext.position.set(20,20);
+        this.scorepoints = new BitmapText("0", {fontName: "BitmapPixelText"});
+        this.scorepoints.position.set(100,20);
+        this.score.addChild(scoretext, this.scorepoints);
+        this.addChild(this.score);
+
         new Tween({dc:0}).
-        to({dc:1}, /*300000*/5000).
+        to({dc:1}, 300000).
         onComplete(()=>{this.spawnBoss()}).
         start();
             
         Keyboard.down.on("Space", this.shoot, this);
         Keyboard.down.on("Escape",this.showMenu, this);
+        console.log(this.levelMusic.muted);
             
     }
 
@@ -229,8 +244,20 @@ export class Level extends BaseScene {
                             start();
                         }
                     }
+                    const hitBoss = checkCollision(hx, this.boss);
+                    if (hitBoss != null && this.bossSpawned && !this.boss.isDead()) {
+                        proy.playState("landed");
+                        proy.x -= 30;
+                        this.boss.receiveDamage(this.mySpaceship.dealDamage());
+                        new Tween({dc:0}).
+                        to({dc:1},1).
+                        onComplete(()=>{this.destProy(this.proyectiles,proy,hx)}).
+                        start();
+                    }
                     const hitPU = checkCollision(hx,this.powerup);
                     if (hitPU != null && !this.powerup.pickeable) {
+                        const explode = this.SFX.get("otherExplosion");
+                        explode?.play({volume: 0.2, singleInstance: true});
                         proy.playState("landed");
                         proy.x -= 30;
                         this.powerup.explode();
@@ -307,13 +334,16 @@ export class Level extends BaseScene {
                     this.destProy(this.smallEnemyProyectiles,seproy,ehx);
                 }
             }
-    
+
             for (let enemy of this.bigEnemies) {
                 if (enemy.bigEnemyDead) {
                     this.removeChild(enemy);
                     new Tween({dc:0}).
                     to({dc:1}, 2000).
-                    onComplete(()=>{this.respawnEnemy(enemy)}).
+                    onComplete(()=>{
+                        this.respawnEnemy(enemy);
+                        this.addScore(50);
+                    }).
                     start();
                 } else {
                     enemy.update(deltaTime);
@@ -328,7 +358,10 @@ export class Level extends BaseScene {
                     this.removeChild(enemy);
                     new Tween({dc:0}).
                     to({dc:1}, 2000).
-                    onComplete(()=>{this.respawnEnemy(enemy)}).
+                    onComplete(()=>{
+                        this.respawnEnemy(enemy);
+                        this.addScore(35);
+                    }).
                     start();
                 } else {
                     enemy.update(deltaTime);
@@ -343,7 +376,10 @@ export class Level extends BaseScene {
                     this.removeChild(enemy);
                     new Tween({dc:0}).
                     to({dc:1}, 2000).
-                    onComplete(()=>{this.respawnEnemy(enemy)}).
+                    onComplete(()=>{
+                        this.respawnEnemy(enemy);
+                        this.addScore(10);
+                    }).
                     start();
                 } else {
                     enemy.update(deltaTime);
@@ -367,6 +403,8 @@ export class Level extends BaseScene {
                     this.powerup.x--;
                     const picked = checkCollision(this.mySpaceship, this.powerup);
                     if (picked != null && this.powerup.pickeable) {
+                        const pickup = this.SFX.get("pickPU");
+                        pickup?.play({volume: 0.2, singleInstance: true});
                         this.removeChild(this.powerup);
                         this.powerup.pickeable = false;
                         this.mySpaceship.getBonus(this.powerup.bonus);
@@ -383,16 +421,39 @@ export class Level extends BaseScene {
                 this.gameover();
             }
 
-            if (this.bossSpawned && !this.boss.isDead()) {
+            if (this.boss.isActive() && !this.boss.isDead()) {
+                this.bossShoot(this.boss);
                 if (this.boss.y < 100) {
                     this.boss.changeSpeed();
                 }
                 if (this.boss.y > 620) {
                     this.boss.changeSpeed();
                 }
+            } else if (this.boss.exploding) {
+                this.boss.speed.y = 0;
+            }
+            for (let bossproy of this.bossProyectiles.keys()) {
+                bossproy.updateAnim(deltaTime);
+                const bosshx = this.bossProyectiles.get(bossproy);
+                bossproy.x -= 3.5;
+                if (bosshx) {
+                    bosshx.position.copyFrom(bossproy);
+                    const hit = checkCollision(bosshx,this.mySpaceship);
+                    if (hit != null) {
+                        bossproy.playState("landed");
+                        bossproy.x += 5;
+                        this.mySpaceship.explode();
+                        new Tween({dc:0}).
+                        to({dc:1},1).
+                        onComplete(()=>{this.destProy(this.bossProyectiles,bossproy,bosshx)}).
+                        start();
+                    }
+                }
+                if (bossproy.x < -100) {
+                    this.destProy(this.bossProyectiles,bossproy,bosshx);
+                }
             }
         }
-
     }
 
     public respawnEnemy(enemy: BigEnemy | SmallEnemy | MediumEnemy) {
@@ -442,7 +503,8 @@ export class Level extends BaseScene {
             proyectile.playState("shoted");
             proyectile.position.set(this.mySpaceship.x+40, this.mySpaceship.y+5);
             proyectile.filters = [this.laserGlow];
-            const proyHx = new Wall(15,15);
+            const proyHx = new Wall(13,13);
+            proyHx.pivot.set(proyHx.width/2, proyHx.height/2);
             proyHx.position.copyFrom(proyectile);
             this.addChild(proyectile,proyHx);
             this.proyectiles.set(proyectile,proyHx);
@@ -462,7 +524,8 @@ export class Level extends BaseScene {
             ], 0.5, false);
             proyectile.playState("shoted");
             proyectile.position.set(enemy.x, enemy.y);
-            const proyHx = new Wall(15,15);
+            const proyHx = new Wall(13,13);
+            proyHx.pivot.set(proyHx.width/2, proyHx.height/2);
             proyHx.position.copyFrom(proyectile);
             this.addChild(proyectile,proyHx);
             this.bigEnemyProyectiles.set(proyectile,proyHx);
@@ -485,7 +548,8 @@ export class Level extends BaseScene {
             ], 0.5, false);
             proyectile.playState("shoted");
             proyectile.position.set(enemy.x, enemy.y);
-            const proyHx = new Wall(15,15);
+            const proyHx = new Wall(13,13);
+            proyHx.pivot.set(proyHx.width/2, proyHx.height/2);
             proyHx.position.copyFrom(proyectile);
             this.addChild(proyectile,proyHx);
             this.mediumEnemyProyectiles.set(proyectile,proyHx);
@@ -508,13 +572,123 @@ export class Level extends BaseScene {
             ], 0.5, false);
             proyectile.playState("shoted");
             proyectile.position.set(enemy.x, enemy.y);
-            const proyHx = new Wall(15,15);
+            const proyHx = new Wall(13,13);
+            proyHx.pivot.set(proyHx.width/2, proyHx.height/2);
             proyHx.position.copyFrom(proyectile);
             this.addChild(proyectile,proyHx);
             this.smallEnemyProyectiles.set(proyectile,proyHx);
             new Tween({dc:0}).
             to({dc:1}, 2000).
             onComplete(()=>{enemy.smallShooting = false}).
+            start();
+        }
+    }
+    private bossShoot(boss: XertacBoss) {
+        if (!boss.bossShooting) {
+            boss.bossShooting = true;
+            const proyectile1 = new StateAnimations();
+            proyectile1.addState("shoted",
+            [
+                "BPF1.png",
+                "BPF2.png",
+                "BPF3.png",
+                "BPF4.png",
+                "BPF5.png",
+                "BPF6.png",
+                "BPF7.png",
+                "BPF8.png",
+                "BPF9.png",
+                "BPF10.png"
+            ], 0.5, true);
+            proyectile1.addState("landed", [
+                "BPE1.png",
+                "BPE2.png",
+                "BPE3.png",
+                "BPE4.png",
+                "BPE5.png",
+                "BPE6.png",
+                "BPE7.png",
+                "BPE8.png",
+                "BPE9.png"
+            ], 0.5, false);
+            proyectile1.playState("shoted");
+            proyectile1.rotation = Math.PI*3/2;
+            proyectile1.scale.set(0.1,0.1);
+            proyectile1.position.set(boss.x-55, boss.y);
+            const proyHx1 = new Wall(51.7,14.1);
+            proyHx1.pivot.set(proyHx1.width/2, proyHx1.height/2);
+            proyHx1.position.copyFrom(proyectile1);
+            const proyectile2 = new StateAnimations();
+            proyectile2.addState("shoted",
+            [
+                "BPF1.png",
+                "BPF2.png",
+                "BPF3.png",
+                "BPF4.png",
+                "BPF5.png",
+                "BPF6.png",
+                "BPF7.png",
+                "BPF8.png",
+                "BPF9.png",
+                "BPF10.png"
+            ], 0.5, true);
+            proyectile2.addState("landed", [
+                "BPE1.png",
+                "BPE2.png",
+                "BPE3.png",
+                "BPE4.png",
+                "BPE5.png",
+                "BPE6.png",
+                "BPE7.png",
+                "BPE8.png",
+                "BPE9.png"
+            ], 0.5, false);
+            proyectile2.playState("shoted");
+            proyectile2.rotation = Math.PI*3/2;
+            proyectile2.scale.set(0.1,0.1);
+            proyectile2.position.set(boss.x-55, boss.y-60);
+            const proyHx2 = new Wall(51.7,14.1);
+            proyHx2.pivot.set(proyHx2.width/2, proyHx2.height/2);
+            proyHx2.position.copyFrom(proyectile2);
+            const proyectile3 = new StateAnimations();
+            proyectile3.addState("shoted",
+            [
+                "BPF1.png",
+                "BPF2.png",
+                "BPF3.png",
+                "BPF4.png",
+                "BPF5.png",
+                "BPF6.png",
+                "BPF7.png",
+                "BPF8.png",
+                "BPF9.png",
+                "BPF10.png"
+            ], 0.5, true);
+            proyectile3.addState("landed", [
+                "BPE1.png",
+                "BPE2.png",
+                "BPE3.png",
+                "BPE4.png",
+                "BPE5.png",
+                "BPE6.png",
+                "BPE7.png",
+                "BPE8.png",
+                "BPE9.png"
+            ], 0.5, false);
+            proyectile3.playState("shoted");
+            proyectile3.rotation = Math.PI*3/2;
+            proyectile3.scale.set(0.1,0.1);
+            proyectile3.position.set(boss.x-55, boss.y+60);
+            const proyHx3 = new Wall(51.7,14.1);
+            proyHx3.pivot.set(proyHx3.width/2, proyHx3.height/2);
+            proyHx3.position.copyFrom(proyectile3);
+            this.addChild(proyectile1,proyHx1,proyectile2,proyHx2,proyectile3,proyHx3);
+            this.bossProyectiles.set(proyectile1,proyHx1);
+            this.bossProyectiles.set(proyectile2,proyHx2);
+            this.bossProyectiles.set(proyectile3,proyHx3);
+            new Tween({dc:0}).
+            to({dc:1}, 750).
+            onComplete(()=>{boss.bossShooting = false}).
             start();
         }
     }
@@ -528,15 +702,32 @@ export class Level extends BaseScene {
         
     }
 
+    private addScore(points: number) {
+
+        const aux = parseFloat(this.scorepoints.text);
+        this.scorepoints.text = (aux + points).toString();
+
+    }
+
     private spawnBoss() {
 
-        this.boss = new XertacBoss();
+        const bossexpl = this.SFX.get("BossExplosion");
+        if (bossexpl) {
+            this.boss = new XertacBoss(bossexpl.muted);
+        }
         this.boss.position.set(Manager.WIDTH+200,Manager.HEIGHT/2);
         this.bossSpawned = true;
         this.addChild(this.boss);
         new Tween(this.boss).
         to({x: Manager.WIDTH-200}, 10000).
         onComplete(()=>{this.boss.activate()}).
+        start();
+        new Tween(this.levelMusic).
+        to({volume: 0}, 4000).
+        onComplete(()=> {
+            this.levelMusic = sound.find("BossBattle2");
+            this.levelMusic.play({volume: 0.2, singleInstance: true, loop: true});
+        }).
         start();
 
     }
@@ -562,8 +753,10 @@ export class Level extends BaseScene {
     }
 
     private mainMenu() {
-        const [sfxmuted] = this.SFX.values();
-        Manager.changeScene(new MainMenu(this.levelMusic.muted,sfxmuted.muted));
+        const sfxmuted = this.SFX.get("SsShooting");
+        if (sfxmuted) {
+            Manager.changeScene(new MainMenu(this.levelMusic.muted,sfxmuted.muted));
+        }
         this.levelMusic.muted = true;
     }
 
@@ -588,11 +781,13 @@ export class Level extends BaseScene {
         }
     }
     private muteSFX() {
-        const [auxSFX] = this.SFX.values();
-        if (auxSFX.muted) {
-            this.SFX.forEach((keys)=>{keys.muted = true});
-        } else {    
+        const auxSFX = this.SFX.get("SsShooting");
+        if (auxSFX?.muted) {
             this.SFX.forEach((keys)=>{keys.muted = false});
+            this.boss.muteBoss(false);
+        } else {    
+            this.SFX.forEach((keys)=>{keys.muted = true});
+            this.boss.muteBoss(true);
         }
     }
 

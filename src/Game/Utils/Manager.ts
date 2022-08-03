@@ -1,4 +1,4 @@
-import { Application, TextStyle, Ticker } from "pixi.js";
+import { Application, BitmapFont, TextStyle, Ticker } from "pixi.js";
 import { Group } from "tweedle.js";
 import { BaseScene } from "./BaseScene";
 import { Keyboard } from "./Keyboard";
@@ -8,6 +8,7 @@ export namespace Manager {
 
     export const WIDTH = 1280;
     export const HEIGHT = 720;
+    export const SOUND_MUTE = false;
     export const TEXT_STYLE = new TextStyle({
         fontFamily: "PixelFont",
         fontSize: 75,
@@ -18,7 +19,17 @@ export namespace Manager {
         textBaseline: 'bottom',
         align: 'center'
     });
-    export const SOUND_MUTE = false;
+    const BITMAP_TEXT_STYLE = new TextStyle({
+        fontFamily: "PixelFont",
+        fontSize: 75,
+        fontVariant: "small-caps",
+        lineJoin: "bevel",
+        stroke: "white",
+        strokeThickness: 5,
+        textBaseline: 'bottom',
+        align: 'center'
+    });
+    BitmapFont.from("BitmapPixelText", BITMAP_TEXT_STYLE, {chars: BitmapFont.ASCII});
     let currentScene: BaseScene;
     let app: Application;
     

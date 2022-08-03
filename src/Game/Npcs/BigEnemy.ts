@@ -1,4 +1,3 @@
-import { sound } from "@pixi/sound";
 import { Graphics, Rectangle, Texture } from "pixi.js";
 import { Tween } from "tweedle.js";
 import { PhysicsContainer } from "../PhysicsContainer";
@@ -94,8 +93,6 @@ export class BigEnemy extends PhysicsContainer implements InterUpdateable, Inter
     public receiveDamage(damage: number) {
         this.health -= damage;
         if (this.health <= 0) {
-            const explosion = sound.find("EnemyExplosion");
-            explosion.play({volume: 0.05, singleInstance: true});
             this.speed.set(0);
             this.scale.set(1);
             this.enemyShip.removeChild(this.hitbox);

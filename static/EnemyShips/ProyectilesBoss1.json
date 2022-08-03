@@ -1,0 +1,63 @@
+{
+  "frames": {
+    "BPE5.png": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 600,
+        "h": 600
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 105,
+        "y": 105,
+        "w": 600,
+        "h": 600
+      },
+      "sourceSize": {
+        "w": 810,
+        "h": 810
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "BPE4.png": {
+      "frame": {
+        "x": 606,
+        "y": 2,
+        "w": 540,
+        "h": 540
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 135,
+        "y": 135,
+        "w": 540,
+        "h": 540
+      },
+      "sourceSize": {
+        "w": 810,
+        "h": 810
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "ProyectilesBoss1.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1148,
+      "h": 604
+    },
+    "scale": 1
+  }
+}

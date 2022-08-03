@@ -1,0 +1,495 @@
+{
+  "frames": {
+    "Boss1Explode17.png": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 186,
+        "h": 294
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 186,
+        "h": 294
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode14.png": {
+      "frame": {
+        "x": 192,
+        "y": 2,
+        "w": 167,
+        "h": 287
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 254,
+        "w": 167,
+        "h": 287
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode15.png": {
+      "frame": {
+        "x": 2,
+        "y": 300,
+        "w": 177,
+        "h": 287
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 177,
+        "h": 287
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode16.png": {
+      "frame": {
+        "x": 183,
+        "y": 300,
+        "w": 181,
+        "h": 287
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 181,
+        "h": 287
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode19.png": {
+      "frame": {
+        "x": 363,
+        "y": 2,
+        "w": 195,
+        "h": 287
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 195,
+        "h": 287
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode20.png": {
+      "frame": {
+        "x": 368,
+        "y": 293,
+        "w": 187,
+        "h": 285
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 187,
+        "h": 285
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode18.png": {
+      "frame": {
+        "x": 2,
+        "y": 591,
+        "w": 187,
+        "h": 283
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 270,
+        "y": 215,
+        "w": 187,
+        "h": 283
+      },
+      "sourceSize": {
+        "w": 700,
+        "h": 700
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode11.png": {
+      "frame": {
+        "x": 193,
+        "y": 591,
+        "w": 172,
+        "h": 281
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 172,
+        "h": 281
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode12.png": {
+      "frame": {
+        "x": 562,
+        "y": 2,
+        "w": 170,
+        "h": 280
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 170,
+        "h": 280
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode13.png": {
+      "frame": {
+        "x": 562,
+        "y": 286,
+        "w": 169,
+        "h": 279
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 262,
+        "w": 169,
+        "h": 279
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode5.png": {
+      "frame": {
+        "x": 369,
+        "y": 582,
+        "w": 159,
+        "h": 278
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 263,
+        "w": 159,
+        "h": 278
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode1.png": {
+      "frame": {
+        "x": 532,
+        "y": 582,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 240,
+        "y": 185,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode10.png": {
+      "frame": {
+        "x": 736,
+        "y": 2,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode2.png": {
+      "frame": {
+        "x": 736,
+        "y": 282,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 240,
+        "y": 185,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode3.png": {
+      "frame": {
+        "x": 735,
+        "y": 562,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 240,
+        "y": 185,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode4.png": {
+      "frame": {
+        "x": 2,
+        "y": 878,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 240,
+        "y": 185,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 640
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode6.png": {
+      "frame": {
+        "x": 165,
+        "y": 878,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode7.png": {
+      "frame": {
+        "x": 328,
+        "y": 876,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode8.png": {
+      "frame": {
+        "x": 491,
+        "y": 864,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boss1Explode9.png": {
+      "frame": {
+        "x": 654,
+        "y": 862,
+        "w": 159,
+        "h": 276
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 320,
+        "y": 265,
+        "w": 159,
+        "h": 276
+      },
+      "sourceSize": {
+        "w": 800,
+        "h": 800
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "ExplodingBoss1.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 897,
+      "h": 1156
+    },
+    "scale": 1
+  }
+}
