@@ -21,7 +21,8 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     private turboSs = false;
     private damageUpSs = false;
     private shieldSs = true;
-    private lifes = 0;
+    private lifes = 3;
+    public tangible = true;
     
     private static readonly SS_SPEED = 200;
 
@@ -97,7 +98,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         super.update(dt);
         this.SsAnimations.updateAnim(dt);
         this.turboAnimations.updateAnim(dt);
-        if (this.lifes>-1) {
+        if (this.tangible) {
             if (Keyboard.state.get("ArrowRight")) {
                 if (this.turboSs) {
                     this.speed.x = Spaceship.SS_SPEED+125;
@@ -143,11 +144,13 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             this.damageUpSs = false;
             this.turboSs = false;
             this.shieldSs = true;
+            this.speed.set(0);
             const explosion = sound.find("SsExplosion");
-            explosion.play({volume: 0.2, singleInstance: true});
+            explosion.play({volume: 0.1, singleInstance: true});
             this.wholeShip.removeChild(this.cannonAnimations, this.turboAnimations);
             this.SsAnimations.playState("explode");
             this.removeChild(this.Sshitbox);
+            this.tangible = false;
             new Tween({dc:0}).to({dc:1},400).onComplete(()=>{
                 this.removeChild(this.wholeShip);
             }).start();
@@ -168,14 +171,18 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         }
     }
 
-    // public respawn() {
-    //     this.wholeShip.addChild(this.cannonAnimations, this.turboAnimations);
-    //     this.SsAnimations.playState("idle");
-    //     new Tween({dc:0}).
-    //     to({dc:1}, 2000).
-    //     onComplete(()=>{this.addChild(this.Sshitbox)}).
-    //     start();
-    // }
+    public respawn() {
+        this.wholeShip.addChild(this.cannonAnimations, this.turboAnimations);
+        this.SsAnimations.playState("idle");
+        this.addChild(this.wholeShip);
+        new Tween({dc:0}).
+        to({dc:1}, 1500).
+        onComplete(()=>{
+            this.addChild(this.Sshitbox);
+            this.tangible = true;
+        }).
+        start();
+    }
 
     public getHitbox():Rectangle {
         return this.Sshitbox.getBounds();
@@ -231,10 +238,14 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
     }
 
     public isDead() {
-        if (this.lifes<=-1) {
+        if (this.lifes<=0) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public getLifes():number {
+        return this.lifes;
     }
 }

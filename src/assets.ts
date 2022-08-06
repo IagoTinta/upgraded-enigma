@@ -25,6 +25,7 @@ export const assets = [
     {url:"/Backgrounds/levelBackground.png", name: "background"},
     {url:"/Backgrounds/MainMenuBack.png", name: "MainMenuBack"},
     {url:"/Backgrounds/GameOverBackground.png", name: "GameOverBack"},
+    {url:"/Backgrounds/LevelWonBackground.png", name: "LevelWonBack"},
 
     {url:"/Spaceships/Spaceship3.json", name: "Spaceship3"},
     {url:"/Spaceships/SsNFlight.json", name: "SsNFlight"},

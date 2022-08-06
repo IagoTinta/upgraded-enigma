@@ -14,7 +14,7 @@ export class GameOver extends BaseScene{
     private gameoverMusic: Sound;
     private gameoverSFX: Sound;
 
-    constructor(musicmuted: boolean, sfxmuted: boolean) {
+    constructor(musicmuted: boolean, sfxmuted: boolean, totalpoints: number) {
         super();
 
         this.background = Sprite.from("GameOverBack");
@@ -34,15 +34,20 @@ export class GameOver extends BaseScene{
         this.gameoverScreen.pivot.set(522.5,358);
         this.gameoverScreen.position.set(Manager.WIDTH/2,Manager.HEIGHT/2);
 
+        const finalscore = new Text("Final Score: " + totalpoints, Manager.TEXT_STYLE);
+        finalscore.anchor.set(0.5);
+        finalscore.position.set(gameoverBoard.width/2, gameoverBoardtittle.y+200);
+        this.gameoverScreen.addChild(finalscore);
+
         const back = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        back.position.set(272.5,250);
+        back.position.set(272.5,300);
         const backText: Text = new Text("Back to \n Main Menu", Manager.TEXT_STYLE);
         backText.anchor.set(0.5);
         backText.position.copyFrom(back);
         back.on(Button.CLICKED_EVENT, this.back2Menu, this);
         this.gameoverScreen.addChild(back,backText);
         const retry = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        retry.position.set(772.5,250);
+        retry.position.set(772.5,300);
         const retryText: Text = new Text("Retry Level", Manager.TEXT_STYLE);
         retryText.anchor.set(0.5);
         retryText.position.copyFrom(retry);
@@ -50,14 +55,14 @@ export class GameOver extends BaseScene{
         this.gameoverScreen.addChild(retry,retryText);
         this.addChild(this.gameoverScreen);
         const muteMusic = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        muteMusic.position.set(272.5,500);
+        muteMusic.position.set(272.5,525);
         const muteText: Text = new Text("Mute Music", Manager.TEXT_STYLE);
         muteText.anchor.set(0.5);
         muteText.position.copyFrom(muteMusic.position);
         muteMusic.on(Button.CLICKED_EVENT, this.muteMusic, this);
         this.gameoverScreen.addChild(muteMusic,muteText);
         const muteSFX = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        muteSFX.position.set(772.5,500);
+        muteSFX.position.set(772.5,525);
         const mSFXText: Text = new Text("Mute SFX", Manager.TEXT_STYLE);
         mSFXText.anchor.set(0.5);
         mSFXText.position.copyFrom(muteSFX.position);

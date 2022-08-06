@@ -1,4 +1,4 @@
-import { BitmapText, Container, NineSlicePlane, Text, Texture, TilingSprite } from "pixi.js";
+import { BitmapText, Container, NineSlicePlane, Sprite, Text, Texture, TilingSprite } from "pixi.js";
 import { Group, Tween } from "tweedle.js";
 import { BigEnemy } from "../Game/Npcs/BigEnemy";
 import { Spaceship } from "../Game/Npcs/Spaceship";
@@ -17,6 +17,7 @@ import { GameOver } from "./GameOver";
 import { Button } from "../Game/Utils/Button";
 import { MainMenu } from "./MainMenu";
 import { XertacBoss } from "../Game/Npcs/XertacBoss";
+import { LevelWon } from "./LevelWon";
 
 
 export class Level extends BaseScene {
@@ -28,6 +29,8 @@ export class Level extends BaseScene {
     private powerup: PowerUp;
     private score: Container;
     private scorepoints: BitmapText;
+    private lifes: Container;
+    private remaininglifes: BitmapText;
 
     //player
     private mySpaceship: Spaceship;
@@ -53,6 +56,8 @@ export class Level extends BaseScene {
     private onMenu: boolean = false;
     private pauseMenu: Container;
     private bossSpawned: boolean = false;
+    private respawning = false;
+    private win = false;
 
     constructor(musicMuted: boolean, SFXMuted: boolean) {
 
@@ -162,21 +167,31 @@ export class Level extends BaseScene {
         this.pauseMenu.addChild(resume,resumeText,muteSFX,muteSFXText,muteMusic,muteMusicText,back2Menu,b2mText);
 
         this.score = new Container();
-        const scoretext = new Text("Score: ", Manager.TEXT_STYLE);
-        scoretext.position.set(20,20);
+        const scoretext = new Text("Score : ", Manager.TEXT_STYLE);
         this.scorepoints = new BitmapText("0", {fontName: "BitmapPixelText"});
-        this.scorepoints.position.set(100,20);
+        this.scorepoints.scale.set(0.75);
+        this.scorepoints.position.set(scoretext.x+167.5,scoretext.y+30);
         this.score.addChild(scoretext, this.scorepoints);
+        this.score.y = -15;
+        this.score.scale.set(0.7);
         this.addChild(this.score);
 
+        this.lifes = new Container();
+        const lifesShip:Sprite = Sprite.from("Spaceship3.png");
+        this.remaininglifes = new BitmapText(" :" + this.mySpaceship.getLifes().toString(), {fontName: "BitmapPixelText"});
+        this.remaininglifes.position.set(90,30);
+        this.lifes.addChild(lifesShip,this.remaininglifes);
+        this.lifes.scale.set(0.6);
+        this.lifes.position.y = Manager.HEIGHT-100;
+        this.addChild(this.lifes);
+
         new Tween({dc:0}).
-        to({dc:1}, 300000).
+        to({dc:1}, 5000).
         onComplete(()=>{this.spawnBoss()}).
         start();
             
         Keyboard.down.on("Space", this.shoot, this);
         Keyboard.down.on("Escape",this.showMenu, this);
-        console.log(this.levelMusic.muted);
             
     }
 
@@ -194,13 +209,25 @@ export class Level extends BaseScene {
             this.world.x -= 0.1 * this.worldTransform.a;
             this.background.tilePosition.x = this.world.x * 10;
             this.boss.update(deltaTime);
+
+            this.remaininglifes.text = " :" + this.mySpaceship.getLifes().toString();
     
             for (let wall of this.walls) {
                 const limit = checkCollision(this.mySpaceship,wall);
-                if (limit != null && !this.mySpaceship.isDead()) {
+                if (limit != null && this.mySpaceship.tangible) {
                     this.mySpaceship.separate(limit,wall.position);
                     this.mySpaceship.speed.set(0,0);
                 }
+            }
+            if (this.respawning && !this.mySpaceship.tangible && !this.mySpaceship.isDead()) {
+                this.respawning = false;
+                new Tween({dc:0}).
+                to({dc:1}, 400).
+                onComplete(()=>{
+                    this.mySpaceship.respawn();
+                    this.respawnShip();
+                }).
+                start();
             }
             for (let proy of this.proyectiles.keys()) {
                 proy.updateAnim(deltaTime);
@@ -282,6 +309,9 @@ export class Level extends BaseScene {
                         beproy.playState("landed");
                         beproy.x += 5;
                         this.mySpaceship.explode();
+                        if (!this.mySpaceship.tangible) {
+                            this.respawning = true;
+                        }
                         new Tween({dc:0}).
                         to({dc:1},1).
                         onComplete(()=>{this.destProy(this.bigEnemyProyectiles,beproy,ehx)}).
@@ -303,6 +333,9 @@ export class Level extends BaseScene {
                         meproy.playState("landed");
                         meproy.x += 5;
                         this.mySpaceship.explode();
+                        if (!this.mySpaceship.tangible) {
+                            this.respawning = true;
+                        }
                         new Tween({dc:0}).
                         to({dc:1},1).
                         onComplete(()=>{this.destProy(this.mediumEnemyProyectiles,meproy,ehx)}).
@@ -324,6 +357,9 @@ export class Level extends BaseScene {
                         seproy.playState("landed");
                         seproy.x += 5;
                         this.mySpaceship.explode();
+                        if (!this.mySpaceship.tangible) {
+                            this.respawning = true;
+                        }
                         new Tween({dc:0}).
                         to({dc:1},1).
                         onComplete(()=>{this.destProy(this.smallEnemyProyectiles,seproy,ehx)}).
@@ -338,13 +374,8 @@ export class Level extends BaseScene {
             for (let enemy of this.bigEnemies) {
                 if (enemy.bigEnemyDead) {
                     this.removeChild(enemy);
-                    new Tween({dc:0}).
-                    to({dc:1}, 2000).
-                    onComplete(()=>{
-                        this.respawnEnemy(enemy);
-                        this.addScore(50);
-                    }).
-                    start();
+                    this.respawnEnemy(enemy);
+                    this.addScore(50);
                 } else {
                     enemy.update(deltaTime);
                     this.bigEnemyShoot(enemy)
@@ -356,13 +387,8 @@ export class Level extends BaseScene {
             for (let enemy of this.mediumEnemies) {
                 if (enemy.mediumEnemyDead) {
                     this.removeChild(enemy);
-                    new Tween({dc:0}).
-                    to({dc:1}, 2000).
-                    onComplete(()=>{
-                        this.respawnEnemy(enemy);
-                        this.addScore(35);
-                    }).
-                    start();
+                    this.respawnEnemy(enemy);
+                    this.addScore(35);
                 } else {
                     enemy.update(deltaTime);
                     this.mediumEnemyShoot(enemy)
@@ -374,13 +400,8 @@ export class Level extends BaseScene {
             for (let enemy of this.smallEnemies) {
                 if (enemy.smallEnemyDead) {
                     this.removeChild(enemy);
-                    new Tween({dc:0}).
-                    to({dc:1}, 2000).
-                    onComplete(()=>{
-                        this.respawnEnemy(enemy);
-                        this.addScore(10);
-                    }).
-                    start();
+                    this.respawnEnemy(enemy);
+                    this.addScore(10);
                 } else {
                     enemy.update(deltaTime);
                     this.smallEnemyShoot(enemy)
@@ -432,6 +453,11 @@ export class Level extends BaseScene {
             } else if (this.boss.exploding) {
                 this.boss.speed.y = 0;
             }
+            if (this.boss.isDead() && !this.win) {
+                this.levelWon();
+                this.win = false;
+            }
+
             for (let bossproy of this.bossProyectiles.keys()) {
                 bossproy.updateAnim(deltaTime);
                 const bosshx = this.bossProyectiles.get(bossproy);
@@ -443,6 +469,9 @@ export class Level extends BaseScene {
                         bossproy.playState("landed");
                         bossproy.x += 5;
                         this.mySpaceship.explode();
+                        if (!this.mySpaceship.tangible) {
+                            this.respawning = true;
+                        }
                         new Tween({dc:0}).
                         to({dc:1},1).
                         onComplete(()=>{this.destProy(this.bossProyectiles,bossproy,bosshx)}).
@@ -458,33 +487,54 @@ export class Level extends BaseScene {
 
     public respawnEnemy(enemy: BigEnemy | SmallEnemy | MediumEnemy) {
         if (!this.bossSpawned) {
-            enemy.respawn();
-            enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
             if (enemy instanceof BigEnemy) {
-                if (enemy.position.y < Manager.HEIGHT/4) {
-                    enemy.speed.y = 35;
-                }
-                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                    enemy.speed.y = -35;
-                }
+                new Tween({dc:0}).
+                to({dc:1}, 2000).
+                onComplete(()=>{
+                    enemy.respawn();
+                    enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
+                    if (enemy.position.y < Manager.HEIGHT/4) {
+                        enemy.speed.y = 35;
+                    }
+                    if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                        enemy.speed.y = -35;
+                    }
+                    this.addChild(enemy);
+                }).
+                start();
             }
             if (enemy instanceof MediumEnemy) {
-                if (enemy.position.y < Manager.HEIGHT/4) {
-                    enemy.speed.y = 50;
-                }
-                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                    enemy.speed.y = -50;
-                }
+                new Tween({dc:0}).
+                to({dc:1}, 1000).
+                onComplete(()=>{
+                    enemy.respawn();
+                    enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
+                    if (enemy.position.y < Manager.HEIGHT/4) {
+                        enemy.speed.y = 50;
+                    }
+                    if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                        enemy.speed.y = -50;
+                    }
+                    this.addChild(enemy);
+                }).
+                start();
             }
             if (enemy instanceof SmallEnemy) {
-                if (enemy.position.y < Manager.HEIGHT/4) {
-                    enemy.speed.y = 90;
-                }
-                if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
-                    enemy.speed.y = -90;
-                }
+                new Tween({dc:0}).
+                to({dc:1}, 500).
+                onComplete(()=>{
+                    enemy.respawn();
+                    enemy.position.set(Manager.WIDTH+(Math.random()*200)+50, Math.random()*(Manager.HEIGHT+600)-300);
+                    if (enemy.position.y < Manager.HEIGHT/4) {
+                        enemy.speed.y = 90;
+                    }
+                    if (enemy.position.y > (Manager.HEIGHT * (3/4))) {
+                        enemy.speed.y = -90;
+                    }
+                    this.addChild(enemy);
+                }).
+                start();
             }
-            this.addChild(enemy);
         }
     }
 
@@ -704,9 +754,18 @@ export class Level extends BaseScene {
 
     private addScore(points: number) {
 
-        const aux = parseFloat(this.scorepoints.text);
-        this.scorepoints.text = (aux + points).toString();
+        if (!this.bossSpawned) {
+            const aux = parseFloat(this.scorepoints.text);
+            this.scorepoints.text = (aux + points).toString();
+        }
 
+    }
+
+    private respawnShip() {
+        this.mySpaceship.position.set(-100, Manager.HEIGHT/2);
+        new Tween(this.mySpaceship).
+        to({x: 300}, 1500).
+        start();
     }
 
     private spawnBoss() {
@@ -719,7 +778,7 @@ export class Level extends BaseScene {
         this.bossSpawned = true;
         this.addChild(this.boss);
         new Tween(this.boss).
-        to({x: Manager.WIDTH-200}, 10000).
+        to({x: Manager.WIDTH-200}, 20000).
         onComplete(()=>{this.boss.activate()}).
         start();
         new Tween(this.levelMusic).
@@ -730,6 +789,25 @@ export class Level extends BaseScene {
         }).
         start();
 
+    }
+
+    private levelWon() {
+        console.log("entre");
+        new Tween({dc:0}).
+        to({dc:1}, 11000).
+        onComplete(()=> {
+            const sfxmuted = this.SFX.get("SsShooting");
+            if (sfxmuted) {
+                const totalpoints = parseFloat(this.scorepoints.text);
+                if (this.levelMusic.muted) {
+                    Manager.changeScene(new LevelWon(true,sfxmuted.muted, totalpoints));
+                } else {
+                    Manager.changeScene(new LevelWon(false,sfxmuted.muted, totalpoints));
+                }
+            }
+            this.levelMusic.muted = true;
+        }).
+        start();
     }
 
     private showMenu() {
@@ -755,7 +833,11 @@ export class Level extends BaseScene {
     private mainMenu() {
         const sfxmuted = this.SFX.get("SsShooting");
         if (sfxmuted) {
-            Manager.changeScene(new MainMenu(this.levelMusic.muted,sfxmuted.muted));
+            if (this.levelMusic.muted) {
+                Manager.changeScene(new MainMenu(true,sfxmuted.muted));
+            } else {
+                Manager.changeScene(new MainMenu(false,sfxmuted.muted));
+            }
         }
         this.levelMusic.muted = true;
     }
@@ -766,7 +848,12 @@ export class Level extends BaseScene {
         to({dc:1}, 1000).
         onComplete(()=>{
             if (sfxmuted != undefined){
-                Manager.changeScene(new GameOver(this.levelMusic.muted,sfxmuted.muted))
+                const totalpoints = parseFloat(this.scorepoints.text);
+                if (this.levelMusic.muted) {
+                    Manager.changeScene(new GameOver(true,sfxmuted.muted, totalpoints));
+                } else {
+                    Manager.changeScene(new GameOver(false,sfxmuted.muted, totalpoints));
+                }
             }
             this.levelMusic.muted = true;
         }).
