@@ -10,7 +10,6 @@ import { StateAnimations } from "../Game/Utils/StateAnimations";
 import { PowerUp } from "../Game/WorldObjects/PowerUp";
 import { Wall } from "../Game/WorldObjects/Wall";
 import { GlowFilter } from "@pixi/filter-glow";
-import { sound, Sound } from "@pixi/sound";
 import { SmallEnemy } from "../Game/Npcs/SmallEnemy";
 import { MediumEnemy } from "../Game/Npcs/MediumEnemy";
 import { GameOver } from "./GameOver";
@@ -48,8 +47,6 @@ export class Level extends BaseScene {
 
     //sound and effects
     private laserGlow: GlowFilter;
-    private levelMusic: Sound;
-    private SFX: Map<string,Sound> = new Map();
 
     //miscellaneous
     private PUactive: boolean = false;
@@ -59,19 +56,11 @@ export class Level extends BaseScene {
     private respawning = false;
     private win = false;
 
-    constructor(musicMuted: boolean, SFXMuted: boolean) {
+    constructor() {
 
         super();
 
-        this.levelMusic = sound.find("Level1Music");
-        this.levelMusic.play({volume: 0.2, singleInstance: true, loop: true});
-        this.levelMusic.muted = musicMuted;
-
-        this.SFX.set("SsShooting", sound.find("SsLaser"));
-        this.SFX.set("pickPU", sound.find("PowerUp"));
-        this.SFX.set("otherExplosion", sound.find("EnemyExplosion"));
-        this.SFX.set("bossExplosion", sound.find("BossExplosion"));
-        this.SFX.forEach((key)=>key.muted = SFXMuted);
+        Manager.playMusic("Level1Music");
 
         this.world = new Container;
         this.background = new TilingSprite(Texture.from("background"), Manager.WIDTH, Manager.HEIGHT);
@@ -118,7 +107,7 @@ export class Level extends BaseScene {
             this.smallEnemies.push(newSE);
             this.addChild(newSE);
         }
-        this.boss = new XertacBoss(SFXMuted);
+        this.boss = new XertacBoss();
 
         this.addChild(
             leftWall,
@@ -283,8 +272,7 @@ export class Level extends BaseScene {
                     }
                     const hitPU = checkCollision(hx,this.powerup);
                     if (hitPU != null && !this.powerup.pickeable) {
-                        const explode = this.SFX.get("otherExplosion");
-                        explode?.play({volume: 0.2, singleInstance: true});
+                        Manager.playSFX("EnemyExplosion");
                         proy.playState("landed");
                         proy.x -= 30;
                         this.powerup.explode();
@@ -424,8 +412,7 @@ export class Level extends BaseScene {
                     this.powerup.x--;
                     const picked = checkCollision(this.mySpaceship, this.powerup);
                     if (picked != null && this.powerup.pickeable) {
-                        const pickup = this.SFX.get("pickPU");
-                        pickup?.play({volume: 0.2, singleInstance: true});
+                        Manager.playSFX("PowerUp");
                         this.removeChild(this.powerup);
                         this.powerup.pickeable = false;
                         this.mySpaceship.getBonus(this.powerup.bonus);
@@ -540,7 +527,7 @@ export class Level extends BaseScene {
 
     public shoot() {
         if (!this.mySpaceship.isShooting() && !this.mySpaceship.isDead()) {
-            this.SFX.get("SsShooting")?.play({volume: 0.2, singleInstance: true});
+            Manager.playSFX("SsLaser");
             this.mySpaceship.shoot();
             const proyectile = new StateAnimations();
             proyectile.addState("shoted",["proyectile3.png"], 0.5);
@@ -770,10 +757,7 @@ export class Level extends BaseScene {
 
     private spawnBoss() {
 
-        const bossexpl = this.SFX.get("BossExplosion");
-        if (bossexpl) {
-            this.boss = new XertacBoss(bossexpl.muted);
-        }
+        this.boss = new XertacBoss();
         this.boss.position.set(Manager.WIDTH+200,Manager.HEIGHT/2);
         this.bossSpawned = true;
         this.addChild(this.boss);
@@ -781,11 +765,11 @@ export class Level extends BaseScene {
         to({x: Manager.WIDTH-200}, 20000).
         onComplete(()=>{this.boss.activate()}).
         start();
-        new Tween(this.levelMusic).
-        to({volume: 0}, 4000).
+        Manager.tweenVolume(0,4000);
+        new Tween({dc:0}).
+        to({dc:1}, 4000).
         onComplete(()=> {
-            this.levelMusic = sound.find("BossBattle2");
-            this.levelMusic.play({volume: 0.2, singleInstance: true, loop: true});
+            Manager.playMusic("BossBattle2");
         }).
         start();
 
@@ -796,16 +780,8 @@ export class Level extends BaseScene {
         new Tween({dc:0}).
         to({dc:1}, 11000).
         onComplete(()=> {
-            const sfxmuted = this.SFX.get("SsShooting");
-            if (sfxmuted) {
-                const totalpoints = parseFloat(this.scorepoints.text);
-                if (this.levelMusic.muted) {
-                    Manager.changeScene(new LevelWon(true,sfxmuted.muted, totalpoints));
-                } else {
-                    Manager.changeScene(new LevelWon(false,sfxmuted.muted, totalpoints));
-                }
-            }
-            this.levelMusic.muted = true;
+            const totalpoints = parseFloat(this.scorepoints.text);
+            Manager.changeScene(new LevelWon(totalpoints));
         }).
         start();
     }
@@ -831,51 +807,25 @@ export class Level extends BaseScene {
     }
 
     private mainMenu() {
-        const sfxmuted = this.SFX.get("SsShooting");
-        if (sfxmuted) {
-            if (this.levelMusic.muted) {
-                Manager.changeScene(new MainMenu(true,sfxmuted.muted));
-            } else {
-                Manager.changeScene(new MainMenu(false,sfxmuted.muted));
-            }
-        }
-        this.levelMusic.muted = true;
+        Manager.changeScene(new MainMenu());
+        Group.shared.removeAll();
     }
 
     private gameover() {
-        const sfxmuted = this.SFX.get("SsShooting");
         new Tween({dc:0}).
         to({dc:1}, 1000).
         onComplete(()=>{
-            if (sfxmuted != undefined){
-                const totalpoints = parseFloat(this.scorepoints.text);
-                if (this.levelMusic.muted) {
-                    Manager.changeScene(new GameOver(true,sfxmuted.muted, totalpoints));
-                } else {
-                    Manager.changeScene(new GameOver(false,sfxmuted.muted, totalpoints));
-                }
-            }
-            this.levelMusic.muted = true;
+            const totalpoints = parseFloat(this.scorepoints.text);
+            Manager.changeScene(new GameOver(totalpoints));
         }).
         start();
     }
 
     private muteMusic() {
-        if (!this.levelMusic.muted) {
-            this.levelMusic.muted = true;
-        } else {
-            this.levelMusic.muted = false;
-        }
+        Manager.muteMusic();
     }
     private muteSFX() {
-        const auxSFX = this.SFX.get("SsShooting");
-        if (auxSFX?.muted) {
-            this.SFX.forEach((keys)=>{keys.muted = false});
-            this.boss.muteBoss(false);
-        } else {    
-            this.SFX.forEach((keys)=>{keys.muted = true});
-            this.boss.muteBoss(true);
-        }
+        Manager.muteSFX();
     }
 
 }

@@ -1,4 +1,3 @@
-import { Sound, sound } from "@pixi/sound";
 import { Container, NineSlicePlane, Sprite, Text, Texture } from "pixi.js";
 import { BaseScene } from "../Game/Utils/BaseScene";
 import { Button } from "../Game/Utils/Button";
@@ -11,11 +10,9 @@ export class LevelWon extends BaseScene {
 
     private background: Sprite;
     private wonScreen: Container;
-    private wonMusic: Sound;
-    private wonSFX: Sound;
     
 
-    constructor(musicmuted: boolean, sfxmuted: boolean, totalpoints: number) {
+    constructor(totalpoints: number) {
 
         super();
 
@@ -71,12 +68,7 @@ export class LevelWon extends BaseScene {
         muteSFX.on(Button.CLICKED_EVENT, this.muteSFX, this);
         this.wonScreen.addChild(muteSFX,mSFXText);
 
-        this.wonMusic = sound.find("GameOverMusic");
-        this.wonMusic.play({volume:0.2,singleInstance:true,loop:true});
-        this.wonMusic.muted = musicmuted;
-
-        this.wonSFX = sound.find("Select");
-        this.wonSFX.muted = sfxmuted;
+        Manager.playMusic("GameOverMusic");
 
     }
 
@@ -85,34 +77,22 @@ export class LevelWon extends BaseScene {
     }
 
     public back2Menu() {
-        this.wonSFX.play({volume: 0.25, singleInstance: true});
-        Manager.changeScene(new MainMenu(this.wonMusic.muted, this.wonSFX.muted));
-        this.wonMusic.muted = true;
-        this.wonSFX.muted = true;
+        Manager.playSFX("Select");
+        Manager.changeScene(new MainMenu());
     }
 
     public playAgain() {
 
-        this.wonSFX.play({volume: 0.25, singleInstance: true});
-        Manager.changeScene(new Level(this.wonMusic.muted, this.wonSFX.muted));
-        this.wonMusic.muted = true;
-        this.wonSFX.muted = true;
+        Manager.playSFX("Select");
+        Manager.changeScene(new Level());
 
     }
 
     private muteMusic() {
-        if (!this.wonMusic.muted) {
-            this.wonMusic.muted = true;
-        } else {
-            this.wonMusic.muted = false;
-        }
+        Manager.muteMusic();
     }
     private muteSFX() {
-        if (!this.wonSFX.muted) {
-            this.wonSFX.muted = true;
-        } else {
-            this.wonSFX.muted = false;
-        }
+        Manager.muteSFX();
     }
 
 }

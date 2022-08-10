@@ -1,4 +1,3 @@
-import { Sound, sound } from "@pixi/sound";
 import { Container, NineSlicePlane, Sprite, Text, Texture} from "pixi.js";
 import { BaseScene } from "../Game/Utils/BaseScene";
 import { Button } from "../Game/Utils/Button";
@@ -11,10 +10,8 @@ export class GameOver extends BaseScene{
 
     private gameoverScreen: Container;
     private background: Sprite;
-    private gameoverMusic: Sound;
-    private gameoverSFX: Sound;
 
-    constructor(musicmuted: boolean, sfxmuted: boolean, totalpoints: number) {
+    constructor(totalpoints: number) {
         super();
 
         this.background = Sprite.from("GameOverBack");
@@ -69,13 +66,7 @@ export class GameOver extends BaseScene{
         muteSFX.on(Button.CLICKED_EVENT, this.muteSFX, this);
         this.gameoverScreen.addChild(muteSFX,mSFXText);
 
-        this.gameoverMusic = sound.find("GameOverMusic");
-        this.gameoverMusic.play({volume:0.2,singleInstance:true,loop:true});
-        this.gameoverMusic.muted = musicmuted;
-
-        this.gameoverSFX = sound.find("Select");
-        this.gameoverSFX.muted = sfxmuted;
-        console.log(musicmuted);
+        Manager.playMusic("GameOverMusic");
 
     }
 
@@ -84,34 +75,22 @@ export class GameOver extends BaseScene{
     }
 
     public back2Menu() {
-        this.gameoverSFX.play({volume: 0.25, singleInstance: true});
-        Manager.changeScene(new MainMenu(this.gameoverMusic.muted, this.gameoverSFX.muted));
-        this.gameoverMusic.muted = true;
-        this.gameoverSFX.muted = true;
+        Manager.playSFX("Select");
+        Manager.changeScene(new MainMenu());
     }
 
     public retrylevel() {
 
-        this.gameoverSFX.play({volume: 0.25, singleInstance: true});
-        Manager.changeScene(new Level(this.gameoverMusic.muted, this.gameoverSFX.muted));
-        this.gameoverMusic.muted = true;
-        this.gameoverSFX.muted = true;
+        Manager.playSFX("Select");
+        Manager.changeScene(new Level());
 
     }
 
     private muteMusic() {
-        if (!this.gameoverMusic.muted) {
-            this.gameoverMusic.muted = true;
-        } else {
-            this.gameoverMusic.muted = false;
-        }
+        Manager.muteMusic();
     }
     private muteSFX() {
-        if (!this.gameoverSFX.muted) {
-            this.gameoverSFX.muted = true;
-        } else {
-            this.gameoverSFX.muted = false;
-        }
+        Manager.muteSFX();
     }
 
 }

@@ -1,5 +1,6 @@
+import { Sound, sound } from "@pixi/sound";
 import { Application, BitmapFont, TextStyle, Ticker } from "pixi.js";
-import { Group } from "tweedle.js";
+import { Group, Tween } from "tweedle.js";
 import { BaseScene } from "./BaseScene";
 import { Keyboard } from "./Keyboard";
 
@@ -13,6 +14,7 @@ export namespace Manager {
         fontFamily: "PixelFont",
         fontSize: 75,
         fontVariant: "small-caps",
+        lineHeight: 50,
         lineJoin: "bevel",
         stroke: "white",
         strokeThickness: 5,
@@ -29,7 +31,9 @@ export namespace Manager {
         textBaseline: 'bottom',
         align: 'center'
     });
+    let currentmusic: Sound;
     BitmapFont.from("BitmapPixelText", BITMAP_TEXT_STYLE, {chars: BitmapFont.ASCII});
+    let SFX: Map<string,Sound> = new Map();
     let currentScene: BaseScene;
     let app: Application;
     
@@ -91,6 +95,60 @@ export namespace Manager {
     function updateTicker(deltaFrame: number) {
         Group.shared.update();
         currentScene?.update(deltaFrame, Ticker.shared.elapsedMS);
+    }
+
+    export function playMusic (music: string) {
+
+        if (currentmusic) {
+            currentmusic.stop();
+        }
+        currentmusic = sound.find(music);
+        if (currentmusic.muted) {
+            currentmusic.play({volume:0.25,singleInstance:true,loop:true, muted: true});
+        } else {
+            currentmusic.play({volume:0.25,singleInstance:true,loop:true, muted: false});
+        }
+
+    }
+
+    export function muteMusic () {
+
+        if (currentmusic.muted) {
+            currentmusic.muted = false;
+        } else {
+            currentmusic.muted = true;
+        }
+
+    }
+
+    export function tweenVolume(objective: number, time: number) {
+        new Tween(currentmusic).
+        to({volume: objective}, time).
+        start();
+    }
+
+    export function setSFX(soundname: string, soundeffect: Sound) {
+        SFX.set(soundname, soundeffect);
+    }
+
+    export function playSFX(soundname: string) {
+        const auxSFX = SFX.get(soundname);
+        if (auxSFX) {
+            if (auxSFX.muted) {
+                auxSFX.play({volume: 0.2, singleInstance: true, muted: true});
+            } else {
+                auxSFX.play({volume: 0.2, singleInstance: true, muted: false});
+            }
+        }
+    }
+
+    export function muteSFX() {
+        const [auxsound] = SFX.values();
+        if (auxsound.muted) {
+            SFX.forEach((keys)=>{keys.muted = false});
+        } else {
+            SFX.forEach((keys)=>{keys.muted = true});
+        }
     }
 
 }

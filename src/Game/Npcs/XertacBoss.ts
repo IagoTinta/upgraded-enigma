@@ -1,9 +1,9 @@
-import { sound } from "@pixi/sound";
 import { Graphics, Rectangle } from "pixi.js";
 import { Tween } from "tweedle.js";
 import { PhysicsContainer } from "../PhysicsContainer";
 import { InterHitbox } from "../Utils/InterHitbox";
 import { InterUpdateable } from "../Utils/InterUpdateable";
+import { Manager } from "../Utils/Manager";
 import { StateAnimations } from "../Utils/StateAnimations";
 
 
@@ -11,17 +11,15 @@ export class XertacBoss extends PhysicsContainer implements InterUpdateable, Int
 
     private boss: StateAnimations;
     private hitbox: Graphics;
-    private health = 60;
+    private health = 6000;
     private active = false;
     private static readonly MOVE_SPEED = 100;
     public bossShooting = false;
     public exploding = false;
-    private mute: boolean;
 
-    constructor(mute: boolean) {
+    constructor() {
 
         super();
-        this.mute = mute;
         this.boss = new StateAnimations();
         this.boss.addState("idleBoss", ["Boss1"], 1);
         this.boss.addState("hittingBoss", ["Boss1hit"], 1);
@@ -114,8 +112,7 @@ export class XertacBoss extends PhysicsContainer implements InterUpdateable, Int
 
     public explode() {
         this.boss.playState("explodingBoss");
-        const bossexpl = sound.find("BossExplosion");
-        bossexpl.play({volume: 0.2, singleInstance: true, loop: false, muted: this.mute});
+        Manager.playSFX("BossExplosion");
         this.exploding = true;
         new Tween({dc:0}).
         to({dc:1}, 5500).
@@ -127,10 +124,6 @@ export class XertacBoss extends PhysicsContainer implements InterUpdateable, Int
         to({dc:1}, 6250).
         onComplete(()=>{this.removeChild(this.boss)}).
         start();
-    }
-
-    public muteBoss(mute: boolean) {
-        this.mute = mute;
     }
 
     public isDead():boolean {

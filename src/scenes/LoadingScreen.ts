@@ -1,3 +1,4 @@
+import { sound } from "@pixi/sound";
 import { WebfontLoaderPlugin } from "pixi-webfont-loader";
 import { Container, Graphics, Loader } from "pixi.js";
 import { assets } from "../assets";
@@ -62,7 +63,13 @@ export class LoadingScreen extends BaseScene {
 
     private loadFinish() {
 
-        Manager.changeScene(new MainMenu(false, false));
+        Manager.changeScene(new MainMenu());
+        Manager.setSFX("Select", sound.find("Select"));
+        Manager.setSFX("EnemyExplosion", sound.find("EnemyExplosion"));
+        Manager.setSFX("PowerUp", sound.find("PowerUp"));
+        Manager.setSFX("SsExplosion", sound.find("SsExplosion"));
+        Manager.setSFX("SsLaser", sound.find("SsLaser"));
+        Manager.setSFX("BossExplosion", sound.find("BossExplosion"));
 
     }
     
