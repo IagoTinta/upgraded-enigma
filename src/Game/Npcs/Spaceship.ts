@@ -99,7 +99,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         this.SsAnimations.updateAnim(dt);
         this.turboAnimations.updateAnim(dt);
         if (this.tangible) {
-            if (Keyboard.state.get("ArrowRight")) {
+            if (Keyboard.state.get("KeyD")) {
                 if (this.turboSs) {
                     this.speed.x = Spaceship.SS_SPEED+125;
                 } else {
@@ -108,14 +108,14 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             } else {
                 this.speed.x = 0;
             }
-            if (Keyboard.state.get("ArrowLeft")) {
+            if (Keyboard.state.get("KeyA")) {
                 if (this.turboSs) {
                     this.speed.x = -Spaceship.SS_SPEED-125;
                 } else {
                     this.speed.x = -Spaceship.SS_SPEED;
                 }
             }
-            if (Keyboard.state.get("ArrowUp")) {
+            if (Keyboard.state.get("KeyW")) {
                 if (this.turboSs) {
                     this.speed.y = -Spaceship.SS_SPEED-125;
                 } else {
@@ -124,7 +124,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             } else {
                 this.speed.y = 0;
             }
-            if (Keyboard.state.get("ArrowDown")) {
+            if (Keyboard.state.get("KeyS")) {
                 if (this.turboSs) {
                     this.speed.y = Spaceship.SS_SPEED+125;
                 } else {

@@ -4,7 +4,7 @@ import { BaseScene } from "../Game/Utils/BaseScene";
 import { Button } from "../Game/Utils/Button";
 import { Manager } from "../Game/Utils/Manager";
 import { CreditsScreen } from "./CreditsScreen";
-import { Level } from "./Level";
+import { ShipAndStageSelect } from "./Ship&StageSelect";
 
 
 export class MainMenu extends BaseScene {
@@ -37,13 +37,13 @@ export class MainMenu extends BaseScene {
 
         Manager.playMusic("MainMenuMusic");
 
-        const start = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
-        start.position.set(272.5,250);
-        const startText: Text = new Text("Start", Manager.TEXT_STYLE);
+        const select = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
+        select.position.set(272.5,250);
+        const startText: Text = new Text("Select Stage\n & Ship", Manager.TEXT_STYLE);
         startText.anchor.set(0.5);
-        startText.position.copyFrom(start.position);
-        start.on(Button.CLICKED_EVENT, this.startGame, this);
-        this.menuScreen.addChild(start,startText);
+        startText.position.copyFrom(select.position);
+        select.on(Button.CLICKED_EVENT, this.selectScreen, this);
+        this.menuScreen.addChild(select,startText);
         const muteMusic = new Button(Texture.from("normal"),Texture.from("down"),Texture.from("over"));
         muteMusic.position.set(272.5,500);
         const muteText: Text = new Text("Mute Music", Manager.TEXT_STYLE);
@@ -78,10 +78,10 @@ export class MainMenu extends BaseScene {
 
     }
 
-    public startGame() {
+    public selectScreen() {
         if (!this.onCredits) {
-            Manager.playSFX("Select", )
-            Manager.changeScene(new Level());
+            Manager.playSFX("Select")
+            Manager.changeScene(new ShipAndStageSelect());
         }
     }
     public goCredits() {

@@ -1,0 +1,303 @@
+{
+  "frames": {
+    "Ship6_Explosion_013.png": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 183,
+        "h": 183
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 36,
+        "y": 36,
+        "w": 183,
+        "h": 183
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_011.png": {
+      "frame": {
+        "x": 189,
+        "y": 2,
+        "w": 161,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 47,
+        "y": 47,
+        "w": 161,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_009.png": {
+      "frame": {
+        "x": 2,
+        "y": 189,
+        "w": 144,
+        "h": 145
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 55,
+        "w": 144,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_016.png": {
+      "frame": {
+        "x": 189,
+        "y": 167,
+        "w": 145,
+        "h": 145
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 55,
+        "y": 55,
+        "w": 145,
+        "h": 145
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6.png": {
+      "frame": {
+        "x": 2,
+        "y": 337,
+        "w": 117,
+        "h": 75
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 5,
+        "y": 26,
+        "w": 117,
+        "h": 75
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_000.png": {
+      "frame": {
+        "x": 123,
+        "y": 337,
+        "w": 117,
+        "h": 75
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 88,
+        "w": 117,
+        "h": 75
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_004.png": {
+      "frame": {
+        "x": 354,
+        "y": 2,
+        "w": 117,
+        "h": 75
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 88,
+        "w": 117,
+        "h": 75
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_005.png": {
+      "frame": {
+        "x": 338,
+        "y": 167,
+        "w": 117,
+        "h": 86
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 85,
+        "w": 117,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_007.png": {
+      "frame": {
+        "x": 2,
+        "y": 416,
+        "w": 117,
+        "h": 113
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 71,
+        "w": 117,
+        "h": 113
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_017.png": {
+      "frame": {
+        "x": 123,
+        "y": 416,
+        "w": 109,
+        "h": 109
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 73,
+        "y": 73,
+        "w": 109,
+        "h": 109
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_019.png": {
+      "frame": {
+        "x": 338,
+        "y": 288,
+        "w": 91,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 82,
+        "y": 82,
+        "w": 91,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Ship6_Explosion_021.png": {
+      "frame": {
+        "x": 244,
+        "y": 316,
+        "w": 81,
+        "h": 82
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 87,
+        "y": 87,
+        "w": 81,
+        "h": 82
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "Spaceship6.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 431,
+      "h": 531
+    },
+    "scale": 1
+  }
+}
