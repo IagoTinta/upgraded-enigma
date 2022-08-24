@@ -624,23 +624,23 @@ export class Level extends BaseScene {
             
             const proyHx1 = new Wall(51.7,14.1)
             proyHx1.pivot.set(proyHx1.width/2,proyHx1.height/2);
-            const proyectile1 = new Proyectile(proyHx1);
+            const proyectile1 = new Proyectile(7,proyHx1);
             proyectile1.rotation = Math.PI*3/2;
-            proyectile1.scale.set(0.1,0.1);
+            proyectile1.scale.set(0.1);
             proyectile1.position.set(boss.x-55, boss.y);
 
             const proyHx2 = new Wall(51.7,14.1);
             proyHx2.pivot.set(proyHx2.width/2, proyHx2.height/2);
-            const proyectile2 = new Proyectile(proyHx2);
+            const proyectile2 = new Proyectile(7,proyHx2);
             proyectile2.rotation = Math.PI*3/2;
-            proyectile2.scale.set(0.1,0.1);
+            proyectile2.scale.set(0.1);
             proyectile2.position.set(boss.x-55, boss.y-60);
 
             const proyHx3 = new Wall(51.7,14.1);
             proyHx3.pivot.set(proyHx3.width/2, proyHx3.height/2);
-            const proyectile3 = new Proyectile(proyHx3);
+            const proyectile3 = new Proyectile(7,proyHx3);
             proyectile3.rotation = Math.PI*3/2;
-            proyectile3.scale.set(0.1,0.1);
+            proyectile3.scale.set(0.1);
             proyectile3.position.set(boss.x-55, boss.y+60);
             
             this.addChild(proyectile1,proyectile2,proyectile3);
