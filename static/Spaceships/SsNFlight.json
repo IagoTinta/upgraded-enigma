@@ -72,7 +72,7 @@
         "y": 0.5
       }
     },
-    "Ship4_normal_fligjt_02.png": {
+    "Ship4_normal_flight_02.png": {
       "frame": {
         "x": 38,
         "y": 37,
@@ -96,7 +96,7 @@
         "y": 0.5
       }
     },
-    "Ship4_normal_fligjt_04.png": {
+    "Ship4_normal_flight_04.png": {
       "frame": {
         "x": 60,
         "y": 1,
@@ -120,7 +120,7 @@
         "y": 0.5
       }
     },
-    "Ship4_normal_fligjt_01.png": {
+    "Ship4_normal_flight_01.png": {
       "frame": {
         "x": 38,
         "y": 64,
@@ -144,7 +144,7 @@
         "y": 0.5
       }
     },
-    "Ship4_normal_fligjt_03.png": {
+    "Ship4_normal_flight_03.png": {
       "frame": {
         "x": 1,
         "y": 66,

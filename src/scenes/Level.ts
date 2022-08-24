@@ -17,6 +17,7 @@ import { Button } from "../Game/Utils/Button";
 import { MainMenu } from "./MainMenu";
 import { XertacBoss } from "../Game/Npcs/XertacBoss";
 import { LevelWon } from "./LevelWon";
+import { Proyectile } from "../Game/WorldObjects/Proyectile";
 
 
 export class Level extends BaseScene {
@@ -42,7 +43,7 @@ export class Level extends BaseScene {
     private bigEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private mediumEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
     private smallEnemyProyectiles: Map<StateAnimations,Wall> = new Map();
-    private bossProyectiles: Map<StateAnimations, Wall> = new Map();
+    private bossProyectiles: Proyectile[];
     private boss: XertacBoss;
 
     //sound and effects
@@ -108,6 +109,7 @@ export class Level extends BaseScene {
             this.addChild(newSE);
         }
         this.boss = new XertacBoss();
+        this.bossProyectiles = [];
 
         this.addChild(
             leftWall,
@@ -445,28 +447,24 @@ export class Level extends BaseScene {
                 this.win = false;
             }
 
-            for (let bossproy of this.bossProyectiles.keys()) {
+            for (let bossproy of this.bossProyectiles) {
                 bossproy.updateAnim(deltaTime);
-                const bosshx = this.bossProyectiles.get(bossproy);
                 bossproy.x -= 3.5;
-                if (bosshx) {
-                    bosshx.position.copyFrom(bossproy);
-                    const hit = checkCollision(bosshx,this.mySpaceship);
-                    if (hit != null) {
-                        bossproy.playState("landed");
-                        bossproy.x += 5;
-                        this.mySpaceship.explode();
-                        if (!this.mySpaceship.tangible) {
-                            this.respawning = true;
-                        }
-                        new Tween({dc:0}).
-                        to({dc:1},1).
-                        onComplete(()=>{this.destProy(this.bossProyectiles,bossproy,bosshx)}).
-                        start();
+                const hit = checkCollision(bossproy,this.mySpaceship);
+                if (hit != null) {
+                    bossproy.land();
+                    bossproy.x += 5;
+                    this.mySpaceship.explode();
+                    if (!this.mySpaceship.tangible) {
+                        this.respawning = true;
                     }
+                    new Tween({dc:0}).
+                    to({dc:1},1).
+                    onComplete(()=>{this.bossProyectiles.splice(this.bossProyectiles.indexOf(bossproy),1)}).
+                    start();
                 }
                 if (bossproy.x < -100) {
-                    this.destProy(this.bossProyectiles,bossproy,bosshx);
+                    this.bossProyectiles.splice(this.bossProyectiles.indexOf(bossproy),1);
                 }
             }
         }
@@ -623,106 +621,30 @@ export class Level extends BaseScene {
     private bossShoot(boss: XertacBoss) {
         if (!boss.bossShooting) {
             boss.bossShooting = true;
-            const proyectile1 = new StateAnimations();
-            proyectile1.addState("shoted",
-            [
-                "BPF1.png",
-                "BPF2.png",
-                "BPF3.png",
-                "BPF4.png",
-                "BPF5.png",
-                "BPF6.png",
-                "BPF7.png",
-                "BPF8.png",
-                "BPF9.png",
-                "BPF10.png"
-            ], 0.5, true);
-            proyectile1.addState("landed", [
-                "BPE1.png",
-                "BPE2.png",
-                "BPE3.png",
-                "BPE4.png",
-                "BPE5.png",
-                "BPE6.png",
-                "BPE7.png",
-                "BPE8.png",
-                "BPE9.png"
-            ], 0.5, false);
-            proyectile1.playState("shoted");
+            
+            const proyHx1 = new Wall(51.7,14.1)
+            proyHx1.pivot.set(proyHx1.width/2,proyHx1.height/2);
+            const proyectile1 = new Proyectile(proyHx1);
             proyectile1.rotation = Math.PI*3/2;
             proyectile1.scale.set(0.1,0.1);
             proyectile1.position.set(boss.x-55, boss.y);
-            const proyHx1 = new Wall(51.7,14.1);
-            proyHx1.pivot.set(proyHx1.width/2, proyHx1.height/2);
-            proyHx1.position.copyFrom(proyectile1);
-            const proyectile2 = new StateAnimations();
-            proyectile2.addState("shoted",
-            [
-                "BPF1.png",
-                "BPF2.png",
-                "BPF3.png",
-                "BPF4.png",
-                "BPF5.png",
-                "BPF6.png",
-                "BPF7.png",
-                "BPF8.png",
-                "BPF9.png",
-                "BPF10.png"
-            ], 0.5, true);
-            proyectile2.addState("landed", [
-                "BPE1.png",
-                "BPE2.png",
-                "BPE3.png",
-                "BPE4.png",
-                "BPE5.png",
-                "BPE6.png",
-                "BPE7.png",
-                "BPE8.png",
-                "BPE9.png"
-            ], 0.5, false);
-            proyectile2.playState("shoted");
+
+            const proyHx2 = new Wall(51.7,14.1);
+            proyHx2.pivot.set(proyHx2.width/2, proyHx2.height/2);
+            const proyectile2 = new Proyectile(proyHx2);
             proyectile2.rotation = Math.PI*3/2;
             proyectile2.scale.set(0.1,0.1);
             proyectile2.position.set(boss.x-55, boss.y-60);
-            const proyHx2 = new Wall(51.7,14.1);
-            proyHx2.pivot.set(proyHx2.width/2, proyHx2.height/2);
-            proyHx2.position.copyFrom(proyectile2);
-            const proyectile3 = new StateAnimations();
-            proyectile3.addState("shoted",
-            [
-                "BPF1.png",
-                "BPF2.png",
-                "BPF3.png",
-                "BPF4.png",
-                "BPF5.png",
-                "BPF6.png",
-                "BPF7.png",
-                "BPF8.png",
-                "BPF9.png",
-                "BPF10.png"
-            ], 0.5, true);
-            proyectile3.addState("landed", [
-                "BPE1.png",
-                "BPE2.png",
-                "BPE3.png",
-                "BPE4.png",
-                "BPE5.png",
-                "BPE6.png",
-                "BPE7.png",
-                "BPE8.png",
-                "BPE9.png"
-            ], 0.5, false);
-            proyectile3.playState("shoted");
+
+            const proyHx3 = new Wall(51.7,14.1);
+            proyHx3.pivot.set(proyHx3.width/2, proyHx3.height/2);
+            const proyectile3 = new Proyectile(proyHx3);
             proyectile3.rotation = Math.PI*3/2;
             proyectile3.scale.set(0.1,0.1);
             proyectile3.position.set(boss.x-55, boss.y+60);
-            const proyHx3 = new Wall(51.7,14.1);
-            proyHx3.pivot.set(proyHx3.width/2, proyHx3.height/2);
-            proyHx3.position.copyFrom(proyectile3);
-            this.addChild(proyectile1,proyHx1,proyectile2,proyHx2,proyectile3,proyHx3);
-            this.bossProyectiles.set(proyectile1,proyHx1);
-            this.bossProyectiles.set(proyectile2,proyHx2);
-            this.bossProyectiles.set(proyectile3,proyHx3);
+            
+            this.addChild(proyectile1,proyectile2,proyectile3);
+            this.bossProyectiles.push(proyectile1,proyectile2,proyectile3);
             new Tween({dc:0}).
             to({dc:1}, 750).
             onComplete(()=>{boss.bossShooting = false}).

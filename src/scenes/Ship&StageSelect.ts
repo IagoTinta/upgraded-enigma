@@ -40,7 +40,7 @@ export class ShipAndStageSelect extends BaseScene {
         select1.position.set(Manager.WIDTH/2-280,350);
         select1.scale.x = 0.75;
         select1.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 1;
+            Manager.setType(1);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -58,7 +58,7 @@ export class ShipAndStageSelect extends BaseScene {
         select2.position.set(Manager.WIDTH/2+20,350);
         select2.scale.x = 0.75;
         select2.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 2;
+            Manager.setType(2);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -76,7 +76,7 @@ export class ShipAndStageSelect extends BaseScene {
         select3.position.set(Manager.WIDTH/2+320,350);
         select3.scale.x = 0.75;
         select3.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 3;
+            Manager.setType(3);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -94,7 +94,7 @@ export class ShipAndStageSelect extends BaseScene {
         select4.position.set(Manager.WIDTH/2-280,600);
         select4.scale.x = 0.75;
         select4.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 4;
+            Manager.setType(4);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -112,7 +112,7 @@ export class ShipAndStageSelect extends BaseScene {
         select5.position.set(Manager.WIDTH/2+20,600);
         select5.scale.x = 0.75;
         select5.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 5;
+            Manager.setType(5);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -130,7 +130,7 @@ export class ShipAndStageSelect extends BaseScene {
         select6.position.set(Manager.WIDTH/2+320,600);
         select6.scale.x = 0.75;
         select6.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 6;
+            Manager.setType(6);
             Manager.playMusic("Select");
             this.removeChild(this.ShipSelectScreen);
             this.addChild(this.StageSelectScreen);
@@ -200,10 +200,8 @@ export class ShipAndStageSelect extends BaseScene {
         Xermal.pivot.set(Xermal.width/2,Xermal.height/2);
         Xermal.position.set(Manager.WIDTH/2+310,600);
         Xermal.on(Button.CLICKED_EVENT, ()=>{
-            this.shipType = 5;
-            Manager.playMusic("Select");
-            this.removeChild(this.ShipSelectScreen);
-            this.addChild(this.StageSelectScreen);
+            Manager.playSFX("Select");
+            Manager.changeScene(new Level());
         }, this);
         const frame2 = new Graphics();
         frame2.beginFill(0x000000, 1);

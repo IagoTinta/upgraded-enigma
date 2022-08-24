@@ -36,6 +36,7 @@ export namespace Manager {
     let SFX: Map<string,Sound> = new Map();
     let currentScene: BaseScene;
     let app: Application;
+    let shipType: number = 0;
     
     export function initialize() {
 
@@ -150,5 +151,14 @@ export namespace Manager {
             SFX.forEach((keys)=>{keys.muted = true});
         }
     }
+
+    export function setType(type: number) {
+        shipType = type;
+    }
+
+    export function getType() : number {
+        return shipType;
+    }
+    
 
 }
