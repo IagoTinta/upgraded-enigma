@@ -339,7 +339,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         this.SsAnimations.updateAnim(dt);
         this.turboAnimations.updateAnim(dt);
         if (this.tangible) {
-            if (Keyboard.state.get("KeyD")) {
+            if (Keyboard.state.get("KeyD") || Keyboard.state.get("ArrowRight")) {
                 if (this.turboSs) {
                     this.speed.x = Spaceship.SS_SPEED+125;
                 } else {
@@ -348,14 +348,14 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             } else {
                 this.speed.x = 0;
             }
-            if (Keyboard.state.get("KeyA")) {
+            if (Keyboard.state.get("KeyA") || Keyboard.state.get("ArrowLeft")) {
                 if (this.turboSs) {
                     this.speed.x = -Spaceship.SS_SPEED-125;
                 } else {
                     this.speed.x = -Spaceship.SS_SPEED;
                 }
             }
-            if (Keyboard.state.get("KeyW")) {
+            if (Keyboard.state.get("KeyW") || Keyboard.state.get("ArrowUp")) {
                 if (this.turboSs) {
                     this.speed.y = -Spaceship.SS_SPEED-125;
                 } else {
@@ -364,7 +364,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
             } else {
                 this.speed.y = 0;
             }
-            if (Keyboard.state.get("KeyS")) {
+            if (Keyboard.state.get("KeyS") || Keyboard.state.get("ArrowDown")) {
                 if (this.turboSs) {
                     this.speed.y = Spaceship.SS_SPEED+125;
                 } else {
@@ -416,6 +416,7 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
         this.wholeShip.addChild(this.cannonAnimations, this.turboAnimations);
         this.SsAnimations.playState("idle");
         this.addChild(this.wholeShip);
+        this.SsAnimations.filters = [new GlowFilter({color: 0xFFFFFF})];
         new Tween({dc:0}).
         to({dc:1}, 1500).
         onComplete(()=>{
@@ -489,5 +490,9 @@ export class Spaceship extends PhysicsContainer implements InterUpdateable, Inte
 
     public getLifes():number {
         return this.lifes;
+    }
+
+    public hasDammageUp() : boolean {
+        return this.damageUpSs;
     }
 }

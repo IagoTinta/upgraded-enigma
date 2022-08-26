@@ -3,6 +3,7 @@ import { BaseScene } from "../Game/Utils/BaseScene";
 import { Button } from "../Game/Utils/Button";
 import { Manager } from "../Game/Utils/Manager";
 import { Level } from "./Level";
+import { Level2 } from "./Level2";
 import { MainMenu } from "./MainMenu";
 
 
@@ -201,7 +202,7 @@ export class ShipAndStageSelect extends BaseScene {
         Xermal.position.set(Manager.WIDTH/2+310,600);
         Xermal.on(Button.CLICKED_EVENT, ()=>{
             Manager.playSFX("Select");
-            Manager.changeScene(new Level());
+            Manager.changeScene(new Level2());
         }, this);
         const frame2 = new Graphics();
         frame2.beginFill(0x000000, 1);

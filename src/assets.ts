@@ -6,6 +6,7 @@ export const assets = [
     {url:"./UI/overButton.png", name:"over"},
     {url:"./UI/downButton.png", name:"down"},
     {url:"./UI/textWindow.png", name:"textWindow"},
+    {url:"./UI/menuToggle.png", name:"menuToggle"},
 
     {url:"./SFX&Music/EnemyExplosion.wav", name:"EnemyExplosion"},
     {url:"./SFX&Music/powerUp.wav", name:"PowerUp"},

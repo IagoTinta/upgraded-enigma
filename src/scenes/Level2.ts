@@ -18,7 +18,7 @@ import { XertacBoss } from "../Game/Npcs/XertacBoss";
 import { LevelWon } from "./LevelWon";
 
 
-export class Level extends BaseScene {
+export class Level2 extends BaseScene {
 
     //world
     private world: Container;
@@ -62,10 +62,10 @@ export class Level extends BaseScene {
 
         super();
 
-        Manager.playMusic("Level1Music");
+        Manager.playMusic("Level2Music");
 
         this.world = new Container;
-        this.background = new TilingSprite(Texture.from("background"), Manager.WIDTH, Manager.HEIGHT);
+        this.background = new TilingSprite(Texture.from("level2Background"), Manager.WIDTH, Manager.HEIGHT);
         this.mySpaceship = new Spaceship();
         this.mySpaceship.position.set(Manager.WIDTH/4,Manager.HEIGHT/2);
 
@@ -118,21 +118,21 @@ export class Level extends BaseScene {
 
         this.bigEnemies = [];
         for (let i = 0; i<3; i++) {
-            const newBE = new BigEnemy(1);
+            const newBE = new BigEnemy(2);
             this.respawnEnemy(newBE);
             this.bigEnemies.push(newBE);
             this.addChild(newBE);
         }
         this.mediumEnemies = [];
         for (let i = 0; i<6; i++) {
-            const newME = new MediumEnemy(1);
+            const newME = new MediumEnemy(2);
             this.respawnEnemy(newME);
             this.mediumEnemies.push(newME);
             this.addChild(newME);
         }
         this.smallEnemies = [];
         for (let i = 0; i<10; i++) {
-            const newSE = new SmallEnemy(1);
+            const newSE = new SmallEnemy(2);
             this.respawnEnemy(newSE);
             this.smallEnemies.push(newSE);
             this.addChild(newSE);
@@ -231,6 +231,7 @@ export class Level extends BaseScene {
         this.addChildAt(this.lifes, this.children.length-1);
         this.addChildAt(this.score, this.children.length-1);
         this.addChildAt(this.menuToggle, this.children.length-1);
+
         if (!this.onMenu) {
             this.mySpaceship.update(deltaTime);
             this.powerup.updateAnim(deltaTime);
@@ -1227,11 +1228,11 @@ export class Level extends BaseScene {
         to({x: Manager.WIDTH-200}, 20000).
         onComplete(()=>{this.boss.activate()}).
         start();
-        Manager.tweenVolume(0,4000);
+        Manager.tweenVolume(0,15000);
         new Tween({dc:0}).
-        to({dc:1}, 4000).
+        to({dc:1}, 19500).
         onComplete(()=> {
-            Manager.playMusic("BossBattle2");
+            Manager.playMusic("BossBattle1");
         }).
         start();
 

@@ -15,14 +15,18 @@ export class MediumEnemy extends PhysicsContainer implements InterUpdateable, In
     private health = 30;
     public mediumEnemyDead = false;
     public mediumShooting = false;
+    private enemyType: number = 0;
 
-    constructor() {
+    constructor(level: number) {
 
         super();
         this.enemyShip = new StateAnimations();
         this.enemyShip.addState("mediumIdleEnemy1", [Texture.from("Medium1.png")], 1);
         this.enemyShip.addState("mediumIdleEnemy2", [Texture.from("Medium2.png")], 1);
         this.enemyShip.addState("mediumIdleEnemy3", [Texture.from("Medium3.png")], 1);
+        this.enemyShip.addState("mediumIdleEnemy4", [Texture.from("Medium4.png")], 1);
+        this.enemyShip.addState("mediumIdleEnemy5", [Texture.from("Medium5.png")], 1);
+        this.enemyShip.addState("mediumIdleEnemy6", [Texture.from("Medium6.png")], 1);
         this.enemyShip.addState("mediumEnemyExplode", [
            "MediumExplosion_1.png",
            "MediumExplosion_2.png",
@@ -35,7 +39,12 @@ export class MediumEnemy extends PhysicsContainer implements InterUpdateable, In
            "MediumExplosion_9.png",
            "MediumExplosion_10.png",
         ], 0.25, false);
-        switch (Math.floor((Math.random()*3)+1)) {
+        if (level == 1) {
+            this.enemyType = Math.floor((Math.random()*3)+1);
+        } else if (level == 2) {
+            this.enemyType = Math.floor((Math.random()*3)+4);
+        }
+        switch (this.enemyType) {
             case 1:
                 this.enemyShip.playState("mediumIdleEnemy1");
                 this.hitbox = new Graphics();
@@ -57,6 +66,30 @@ export class MediumEnemy extends PhysicsContainer implements InterUpdateable, In
                 this.hitbox = new Graphics();
                 this.hitbox.beginFill(0x0000FF, 0);
                 this.hitbox.drawRect(-12,-23,24,46);
+                this.hitbox.endFill();
+                break;
+        
+            case 4:
+                this.enemyShip.playState("mediumIdleEnemy4");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-16,-18,32,36);
+                this.hitbox.endFill();
+                break;
+        
+            case 5:
+                this.enemyShip.playState("mediumIdleEnemy5");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-25,-7.5,50,15);
+                this.hitbox.endFill();
+                break;
+        
+            case 6:
+                this.enemyShip.playState("mediumIdleEnemy6");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-7.5,-25,15,50);
                 this.hitbox.endFill();
                 break;
         
@@ -110,7 +143,12 @@ export class MediumEnemy extends PhysicsContainer implements InterUpdateable, In
     
     public respawn() {
         this.health = 30;
-        switch (Math.floor((Math.random()*3)+1)) {
+        if (this.enemyType < 4) {
+            this.enemyType = Math.floor((Math.random()*3)+1);
+        } else {
+            this.enemyType = Math.floor((Math.random()*3)+4);
+        }
+        switch (this.enemyType) {
             case 1:
                 this.enemyShip.playState("mediumIdleEnemy1");
                 this.hitbox.clear();
@@ -132,6 +170,29 @@ export class MediumEnemy extends PhysicsContainer implements InterUpdateable, In
                 this.hitbox.clear();
                 this.hitbox.beginFill(0x0000FF, 0);
                 this.hitbox.drawRect(-12,-23,24,46);
+                this.hitbox.endFill();
+                break;
+                case 4:
+                this.enemyShip.playState("mediumIdleEnemy4");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-16,-18,32,36);
+                this.hitbox.endFill();
+                break;
+        
+            case 5:
+                this.enemyShip.playState("mediumIdleEnemy5");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-25,-7.5,50,15);
+                this.hitbox.endFill();
+                break;
+        
+            case 6:
+                this.enemyShip.playState("mediumIdleEnemy6");
+                this.hitbox = new Graphics();
+                this.hitbox.beginFill(0x0000FF, 0);
+                this.hitbox.drawRect(-7.5,-25,15,50);
                 this.hitbox.endFill();
                 break;
         

@@ -37,6 +37,7 @@ export namespace Manager {
     let currentScene: BaseScene;
     let app: Application;
     let shipType: number = 0;
+    let isMuted = false;
     
     export function initialize() {
 
@@ -104,20 +105,17 @@ export namespace Manager {
             currentmusic.stop();
         }
         currentmusic = sound.find(music);
-        if (currentmusic.muted) {
-            currentmusic.play({volume:0.25,singleInstance:true,loop:true, muted: true});
-        } else {
-            currentmusic.play({volume:0.25,singleInstance:true,loop:true, muted: false});
-        }
+        currentmusic.play({volume:0.25,singleInstance:true,loop:true, muted: isMuted});
 
     }
 
     export function muteMusic () {
-
-        if (currentmusic.muted) {
+        if (isMuted) {
             currentmusic.muted = false;
+            isMuted = false;
         } else {
             currentmusic.muted = true;
+            isMuted = true;
         }
 
     }
